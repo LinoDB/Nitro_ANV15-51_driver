@@ -1,0 +1,8 @@
+.*
+!.gitignore
+*.mod*
+*.ko
+*.o
+Module*
+module*
+todo.md
