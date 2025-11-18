@@ -1,14 +1,16 @@
-#include <linux/init.h>
 #include <linux/module.h>
+#include <linux/init.h>
 
 MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Hello world! - module");
+MODULE_AUTHOR("Me Lol");
 
-static int hello_init(void) {
+static int __init hello_init(void) {
     printk(KERN_ALERT "Initialized hello module!\n");
     return 0;
 }
 
-static void hello_exit(void) {
+static void __exit hello_exit(void) {
     printk(KERN_ALERT "Exited hello module!\n");
 }
 
