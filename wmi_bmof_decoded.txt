@@ -1,0 +1,232 @@
+# /sys/bus/wmi/devices/05901221-D566-11D1-B2F0-00A0C9062910-13/bmof
+
+class WMIEvent : __ExtrinsicEvent {
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("APGe WMI Event, Version 2.93"), guid("{676AA15E-6A47-4D9F-A2CC-1E6D18D14026}")]
+class APGeEvent : WmiEvent {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+  [WmiDataId(1), read, write, Description("APGe WMI Event Data, Version 2.93")] uint8 EventDetail[8];
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("Sec. WMI Event, Version 2.93"), guid("{A9D77EF6-55E0-4706-B139-96ACE13F2269}")]
+class SecEvent : WmiEvent {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+  [WmiDataId(1), read, write, Description("Sec. WMI Event Data, Version 2.93")] uint8 EventDetail[8];
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("Acer Generic WMI Event, Version 2.93"), guid("{2E6B3CE2-6A58-4AF2-8767-4640CA8A38E3}")]
+class AcerGenericEvent : WmiEvent {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+  [WmiDataId(1), read, write, Description("Acer Generic WMI Event Data, Version 2.93")] uint8 EventDetail[8];
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("APGe WMI Method, Version 2.93"), guid("{61EF69EA-865C-4BC3-A502-A0DEBA0CB531}")]
+class APGeAction {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("APGe WMI Set Devices Function, Version 2.93")] void SetFunction([in] uint64 uiInput, [out] uint32 uiOutput);
+  [WmiMethodId(2), Implemented, read, write, Description("APGe WMI Get Devices Function, Version 2.93")] void GetFunction([in] uint32 uiInput, [out] uint64 uiOutput);
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("Acer Generic WMI Method, Version 2.93"), guid("{1EA0BC57-521E-461B-A7A9-5D36F141A82A}")]
+class AcerGenericMethod {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("Acer Generic Set Devices Function, Version 2.93")] void SetFunction([in] uint64 uiInput, [out] uint32 uiOutput);
+  [WmiMethodId(2), Implemented, read, write, Description("Acer Generic Get Devices Function, Version 2.93")] void GetFunction([in] uint32 uiInput, [out] uint64 uiOutput);
+  [WmiMethodId(3), Implemented, read, write, Description("Acer Generic Get Storage Information, Version 2.93")] void GetStorageInformation([in] uint16 StorageID, [in] uint16 Reserved, [out] uint32 ReturnCode, [out] uint32 StorageSizeinGB, [out] uint16 StringLengthforModelName, [out] uint16 ModelName[40], [out] uint16 StringLengthforSerialNumber, [out] uint16 SerialNumber[40]);
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("APGe Secure WMI Method, Version 2.93"), guid("{9F98130E-3B48-40B3-9402-DE8E160F30CC}")]
+class DataTrans {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("APGe WMI Set Data Function, Version 2.93")] void SetBIOSSettings([in] uint8 FunctionNum, [in] uint8 EncyMethod, [in] uint8 Reserved, [in] uint8 DataLen, [in] uint8 EncyData[128], [out] uint16 ReturnCode);
+  [WmiMethodId(2), Implemented, read, write, Description("APGe WMI Get Data Function, Version 2.93")] void GetBIOSSettings([in] uint8 FunctionNum, [in] uint8 EncyMethod, [in] uint8 Reserved, [in] uint8 CmdLen, [in] uint8 EncyCmd[64], [out] uint16 ReturnCode, [out] uint16 DataLen, [out] uint8 Data[128]);
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("Class used to control smart battery, Version 2.93"), guid("{79772EC5-04B1-4bfd-843C-61E7F77B6CC9}")]
+class BatteryControl {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(19), Implemented, read, write, Description("Get battery Information Interface.")] void GetBattInfoInterface([in] uint32 uBatteryInfoIndex, [in] uint32 uBatteryNo, [out] uint32 uReturn);
+  [WmiMethodId(20), Implemented, read, write, Description("Get Battery Health Control Status.")] void GetBatteryHealthControlStatus([in] uint8 uBatteryNo, [in] uint8 uFunctionQuery, [in] uint8 uReserved[2], [out] uint8 uFunctionList, [out] uint8 uReturn[2], [out] uint8 uFunctionStatus[5]);
+  [WmiMethodId(21), Implemented, read, write, Description("Set Battery Health Control.")] void SetBatteryHealthControl([in] uint8 uBatteryNo, [in] uint8 uFunctionMask, [in] uint8 uFunctionStatus, [in] uint8 uReservedIn[5], [out] uint16 uReturn, [out] uint16 uReservedOut);
+  [WmiMethodId(22), Implemented, read, write, Description("Get Battery Function Data.")] void GetBatteryFunctionData([in] uint8 uFunctionMask, [in] uint8 uReservedIn[3], [out] uint8 uReturnCode[2], [out] uint8 uBACStartTime[2], [out] uint8 uBACStopTime[2], [out] uint8 uBACStatus, [out] uint8 uReservedOut[9]);
+  [WmiMethodId(23), Implemented, read, write, Description("Set Battery Function Data.")] void SetBatteryFunctionData([in] uint8 uFunctionMask, [in] uint8 uBACSwitch, [in] uint8 uReservedIn[6], [out] uint16 uReturnCode, [out] uint8 uReservedOut[2]);
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("Class used for utility, Version 2.93"), guid("{FE1DBBDA-3014-4856-870C-5B3A744BF341}")]
+class UtilityFunction {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("Check user supervisor password.")] void CheckPassword([in] uint16 PasswordLen, [in] uint8 Password[16], [in] string Command, [out] uint32 ReturnCode, [out] uint32 PasswordIsDifferent);
+  [WmiMethodId(2), Implemented, read, write, Description("Set user supervisor password.")] void SetPassword([in] uint16 OldPasswordLen, [in] uint8 OldPassword[16], [in] uint16 NewPasswordLen, [in] uint8 NewPassword[16], [in] string Command, [out] uint32 ReturnCode);
+  [WmiMethodId(3), Implemented, read, write, Description("Get BIOS settings.")] void GetBIOSSettings([in] uint16 PasswordLen, [in] uint8 Password[16], [in] uint16 SettingsIndex, [out] uint32 ReturnCode, [out] uint16 DataLen, [out] uint8 Data[4096], [out] uint8 Reserved[2]);
+  [WmiMethodId(4), Implemented, read, write, Description("Set BIOS settings.")] void SetBIOSSettings([in] uint16 PasswordLen, [in] uint8 Password[16], [in] uint16 uSettingsIndex, [in] uint16 DataLen, [in] uint8 Data[4096], [out] uint32 ReturnCode);
+  [WmiMethodId(5), Implemented, read, write, Description("Set HDD password.")] void SetHDDPassword([in] uint16 Operation, [in] uint8 HDDPassword[16], [in] uint16 PasswordLen, [in] uint16 HDDType, [in] uint8 Reserved[24], [out] uint32 ReturnCode);
+  [WmiMethodId(6), Implemented, read, write, Description("Dock Port Firmware Programming.")] void DockPortFirmwareProgramming([in] uint8 Operation, [in] uint8 Slaveaddr, [in] uint8 SmbusCmd, [in] uint8 ByteCount, [in] uint8 RomAddrL, [in] uint8 RomAddrH, [in] uint8 DataByte[30], [out] uint32 ReturnCode);
+  [WmiMethodId(7), Implemented, read, write, Description("Set Acer Diagnostic Status.")] void SetAcerDiagnostic([in] uint8 SetCommand, [in] uint8 SubFunc, [out] uint8 ReturnCode, [out] uint8 Reserved[3]);
+  [WmiMethodId(8), Implemented, read, write, Description("Get Acer Diagnostic Status.")] void GetAcerDiagnosticStatus([in] uint8 GetCommand, [in] uint8 Reserved, [out] uint8 ReturnCode, [out] uint8 Result, [out] uint16 Capability);
+  [WmiMethodId(9), Implemented, read, write, Description("Device Firmware Programming.")] void DeviceFWProgramming([in] uint8 Operation, [in] uint8 ReservedIn, [out] uint8 ReturnCode, [out] uint8 ReservedOut[3]);
+  [WmiMethodId(10), Implemented, read, write, Description("Get HDD password.")] void GetHDDPassword([in] uint16 Operation, [in] uint16 HDDType, [in] uint8 ReservedIn[28], [out] uint32 ReturnCode, [out] uint16 PWStatus, [out] uint8 HDDPassword[16], [out] uint16 PasswordLen, [out] uint8 ReservedOut[12]);
+  [WmiMethodId(11), Implemented, read, write, Description("Get LED Indicator.")] void GetLedIndicatorSts([in] uint32 uiInput, [out] uint64 uiOutput);
+  [WmiMethodId(12), Implemented, read, write, Description("Set LED Indicator.")] void SetLedIndicator([in] uint64 uiInput, [out] uint32 uiOutput);
+  [WmiMethodId(13), Implemented, read, write, Description("Set EDID to System.")] void SetEDIDtoSystem([in] uint8 EDIDData[256], [out] uint8 ReturnCode, [out] uint8 ReservedOut[3]);
+  [WmiMethodId(14), Implemented, read, write, Description("Get Second Display Device Status.")] void GetSecondDisplayDeviceStatus([in] uint8 ReservedIn[4], [out] uint8 ReturnCode, [out] uint8 DeviceStatus, [out] uint8 ReservedOut[2]);
+  [WmiMethodId(15), Implemented, read, write, Description("Set Second Display Device Status.")] void SetSecondDisplayDeviceStatus([in] uint8 DeviceStatus, [in] uint8 ReservedIn[3], [out] uint8 ReturnCode, [out] uint8 ReservedOut[3]);
+  [WmiMethodId(16), Implemented, read, write, Description("Notify WiFi Status")] void NotifyWifiStatus([in] uint64 uiInput, [out] uint32 uiOutput);
+};
+
+[WMI, dynamic : ToInstance, provider("WmiProv"), Locale("MS\\0x409"), Description("Class used for BIOS settings, Version 2.93"), guid("{F75F5666-B8B3-4a5d-A91C-7488F62E5637}")]
+class BIOSSetting {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("Check password existence.")] void CheckPasswordExist([in] string Command, [out] uint32 ReturnCode, [out] uint32 PasswordExists);
+  [WmiMethodId(2), Implemented, read, write, Description("Get power on password status.")] void GetPowerOnPasswordStatus([out] uint32 ReturnCode, [out] uint32 PowerOnPasswordStatus);
+  [WmiMethodId(3), Implemented, read, write, Description("Set power on password status.")] void SetPowerOnPasswordStatus([in] uint16 PasswordLen, [in] uint8 Password[16], [in] uint16 PowerOnPasswordStatus, [out] uint32 ReturnCode);
+  [WmiMethodId(8), Implemented, read, write, Description("Get boot device model name.")] void GetBootDeviceModelName([in] string Command, [in] uint16 DiskNumber, [out] uint32 ReturnCode, [out] string ModelName);
+  [WmiMethodId(9), Implemented, read, write, Description("Get boot device serial number.")] void GetBootDeviceSerialNumber([in] string Command, [in] uint16 DiskNumber, [out] uint32 ReturnCode, [out] string SerialNum);
+  [WmiMethodId(10), Implemented, read, write, Description("Get asset tag.")] void GetAssetTag([out] uint32 ReturnCode, [out] string AssetTag);
+  [WmiMethodId(11), Implemented, read, write, Description("Set asset tag.")] void SetAssetTag([in] uint16 PasswordLen, [in] uint8 Password[16], [in] string AssetTag, [out] uint32 ReturnCode);
+  [WmiMethodId(13), Implemented, read, write, Description("Load BIOS default.")] void LoadBIOSDefault([in] uint16 PasswordLen, [in] uint8 Password[16], [out] uint32 ReturnCode);
+  [WmiMethodId(14), Implemented, read, write, Description("Load user default.")] void LoadUserDefault([in] uint16 PasswordLen, [in] uint8 Password[16], [out] uint32 ReturnCode);
+  [WmiMethodId(16), Implemented, read, write, Description("Get boot sequence.")] void GetBootSequence([out] uint32 ReturnCode, [out] uint8 BootPriority[16]);
+  [WmiMethodId(17), Implemented, read, write, Description("Set boot sequence.")] void SetBootSequence([in] uint16 PasswordLen, [in] uint8 Password[16], [in] uint8 BootPriority[16], [out] uint32 ReturnCode);
+  [WmiMethodId(18), Implemented, read, write, Description("Get device and port state.")] void GetDevicePortState([in] uint32 DeviceTypeID, [out] uint32 ReturnCode, [out] uint32 DeviceState);
+  [WmiMethodId(19), Implemented, read, write, Description("Set device and port state.")] void SetDevicePortState([in] uint16 PasswordLen, [in] uint8 Password[16], [in] uint16 Reserved, [in] uint32 DeviceTypeID, [in] uint32 DeviceState, [out] uint32 ReturnCode);
+  [WmiMethodId(20), Implemented, read, write, Description("Get UUID.")] void GetUUID([out] uint32 ReturnCode, [out] string UUID);
+  [WmiMethodId(21), Implemented, read, write, Description("Set UUID.")] void SetUUID([in] uint16 PasswordLen, [in] uint8 Password[16], [in] string UUID, [out] uint32 ReturnCode);
+  [WmiMethodId(22), Implemented, read, write, Description("Get Serial Number.")] void GetSerialNumber([out] uint32 ReturnCode, [out] string SerialNumber);
+  [WmiMethodId(23), Implemented, read, write, Description("Set Serial Number.")] void SetSerialNumber([in] uint16 PasswordLen, [in] uint8 Password[16], [in] string SerialNumber, [out] uint32 ReturnCode);
+  [WmiMethodId(24), Implemented, read, write, Description("Get PBA POA status.")] void GetPBAPOAStatus([out] uint32 ReturnCode, [out] uint32 PBAPOAStatus);
+  [WmiMethodId(25), Implemented, read, write, Description("Set PBA POA status.")] void SetPBAPOAStatus([in] uint16 PasswordLen, [in] uint8 Password[16], [in] uint16 PBAPOAStatus, [out] uint32 ReturnCode, [out] uint32 PasswordExistence);
+  [WmiMethodId(26), Implemented, read, write, Description("Get PBA POA transferred data.")] void GetPBAPOAData([out] uint32 ReturnCode, [out] uint8 TransferredData[8]);
+  [WmiMethodId(27), Implemented, read, write, Description("Set PBA POA transferred data.")] void SetPBAPOAData([in] uint8 TransferredData[8], [out] uint32 ReturnCode);
+  [WmiMethodId(28), Implemented, read, write, Description("Get Ownership Tag.")] void GetOwnershipTag([out] uint32 ReturnCode, [out] string OwnershipTag);
+  [WmiMethodId(29), Implemented, read, write, Description("Set Ownership Tag.")] void SetOwnershipTag([in] uint16 PasswordLen, [in] uint8 Password[16], [in] string OwnershipTag, [out] uint32 ReturnCode);
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("Class used to Gaming Function, Version 2.93"), guid("{7A4DDFE7-5B5D-40B4-8595-4408E0CC7F56}")]
+class AcerGamingFunction {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("Set Acer Gaming Profile Configuration.")] void SetGamingProfile([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(2), Implemented, read, write, Description("Set Acer Gaming LED Behavior.")] void SetGamingLED([in] uint8 gmInput[16], [out] uint32 gmOutput);
+  [WmiMethodId(3), Implemented, read, write, Description("Get Acer Gaming Profile Configuration.")] void GetGamingProfile([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(4), Implemented, read, write, Description("Get Acer Gaming LED Behavior.")] void GetGamingLED([in] uint32 gmInput, [out] uint8 gmReturn, [out] uint8 gmOutput[15]);
+  [WmiMethodId(5), Implemented, read, write, Description("Get Acer Gaming System Information.")] void GetGamingSysInfo([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(6), Implemented, read, write, Description("Set Acer Gaming RGB Keyboard Setting.")] void SetGamingRgbKb([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(7), Implemented, read, write, Description("Get Acer Gaming RGB Keyboard Setting.")] void GetGamingRgbKb([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(8), Implemented, read, write, Description("Set Acer Gaming Profile Setting.")] void SetGamingProfileSetting([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(9), Implemented, read, write, Description("Get Acer Gaming Profile Setting.")] void GetGamingProfileSetting([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(10), Implemented, read, write, Description("Set Acer Gaming LED Group Behavior.")] void SetGamingLEDBehavior([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(11), Implemented, read, write, Description("Get Acer Gaming LED Group Behavior.")] void GetGamingLEDBehavior([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(12), Implemented, read, write, Description("Set Acer Gaming LED Group Color.")] void SetGamingLEDColor([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(13), Implemented, read, write, Description("Get Acer Gaming LED Group Color.")] void GetGamingLEDColor([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(14), Implemented, read, write, Description("Set Acer Gaming Fan Group Behavior.")] void SetGamingFanBehavior([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(15), Implemented, read, write, Description("Get Acer Gaming Fan Group Behavior.")] void GetGamingFanBehavior([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(16), Implemented, read, write, Description("Set Acer Gaming Fan Group Speed.")] void SetGamingFanSpeed([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(17), Implemented, read, write, Description("Get Acer Gaming Fan Group Speed.")] void GetGamingFanSpeed([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(18), Implemented, read, write, Description("Set Acer Gaming Fan Table.")] void SetGamingFanTable([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(19), Implemented, read, write, Description("Get Acer Gaming Fan Table.")] void GetGamingFanTable([out] uint64 gmOutput);
+  [WmiMethodId(20), Implemented, read, write, Description("Set Acer Gaming Keyboard Backlight Behavior.")] void SetGamingKBBacklight([in] uint8 gmInput[16], [out] uint32 gmOutput);
+  [WmiMethodId(21), Implemented, read, write, Description("Get Acer Gaming Keyboard Backlight Behavior.")] void GetGamingKBBacklight([in] uint32 gmInput, [out] uint8 gmReturn, [out] uint8 gmOutput[15]);
+  [WmiMethodId(22), Implemented, read, write, Description("Set Acer Gaming Miscellaneous Setting.")] void SetGamingMiscSetting([in] uint64 gmInput, [out] uint32 gmOutput);
+  [WmiMethodId(23), Implemented, read, write, Description("Get Acer Gaming Miscellaneous Setting.")] void GetGamingMiscSetting([in] uint32 gmInput, [out] uint64 gmOutput);
+  [WmiMethodId(24), Implemented, read, write, Description("Set CPU Overclocking Profile.")] void SetCPUOverclockingProfile([in] uint8 OCProfile, [in] uint8 OCStructure[512], [out] uint8 ReturnCode, [out] uint8 Reserved[3]);
+  [WmiMethodId(25), Implemented, read, write, Description("Get CPU Overclocking Profile.")] void GetCPUOverclockingProfile([in] uint8 Reserved[4], [out] uint8 ReturnCode, [out] uint8 ReturnOCProfile, [out] uint8 OCStructure[512]);
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("Class used to Long Run, Version 2.93"), guid("{79772EC6-04B1-4bfd-843C-61E7F77B6CC9}")]
+class LongRunFunction {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("Long Run Para. Pass to BIOS.")] void SetLongRunPara([in] uint8 FunctionIndex, [in] uint8 Period, [out] uint16 ErrorCode);
+  [WmiMethodId(2), Implemented, read, write, Description("Long Run Para. Pass to BIOS.")] void SetFunctionIndex([in] uint8 FunctionIndex, [out] uint16 ErrorCode);
+  [WmiMethodId(3), Implemented, read, write, Description("Long Run Para. Pass to BIOS.")] void SetPeriod([in] uint8 Period, [out] uint16 ErrorCode);
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Locale("MS\\0x409"), Description("Class used to S3 Resume, Version 2.93"), guid("{77B0C3A7-F71D-43cb-B749-91CBFF5DDC43}")]
+class S3ResumeFunction {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description(" Get S3 Resume Time . Pass to BIOS.")] void GetS3ResumeTime([in] uint8 DurationIndex, [out] uint16 DurationTime);
+};
+
+[WMI, Dynamic : ToInstance, Provider("WmiProv"), Locale("MS\\0x409"), Description("Acer BIOS Setting Tool, Version 2.93"), guid("{4BB53443-488A-430D-A25C-874660E23BDD}")]
+class AcerBiosConfigurationTool {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("Set BIOS Options")] void SetBiosOptions([in] uint16 PasswordLen, [in] uint8 Password[16], [in] uint8 Data[2048], [out] uint32 ReturnCode);
+  [WmiMethodId(2), Implemented, read, write, Description("Get BIOS Options")] void GetBiosOptions([in] uint16 PasswordLen, [in] uint8 Password[16], [out] uint32 ReturnCode, [out] uint8 Data[2048]);
+  [WmiMethodId(3), Implemented, read, write, Description("Set BIOS Default Options")] void SetBiosDefaultOptions([in] uint16 PasswordLen, [in] uint8 Password[16], [in] uint8 Data[2048], [out] uint32 ReturnCode);
+  [WmiMethodId(4), Implemented, read, write, Description("Get BIOS Default Options")] void GetBiosDefaultOptions([in] uint16 PasswordLen, [in] uint8 Password[16], [out] uint32 ReturnCode, [out] uint8 Data[2048]);
+  [WmiMethodId(5), Implemented, read, write, Description("Get USB Device Filter Status")] void GetUSBDeviceFilterStatus([out] uint32 ReturnCode, [out] uint8 UDFStatus);
+};
+
+[WMI, Dynamic : ToInstance, Provider("WmiProv"), Locale("MS\\0x409"), Description("Method for PowerShell, Version 2.93"), guid("{48E699DB-C63C-4472-9468-4B4189905D24}")]
+class MethodForPowerShell {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, read, write, Description("Set BIOS Setting")] void SetBiosSetting([in] string Password, [in] string BiosItem, [in] string BiosNewSetting, [out] string Return);
+  [WmiMethodId(2), Implemented, read, write, Description("Get BIOS Setting")] void GetBiosSetting([in] string Password, [in] string BiosItem, [out] string Return, [out] string BiosCurrentSetting);
+  [WmiMethodId(3), Implemented, read, write, Description("Load BIOS default")] void LoadBIOSDefault([in] string Password, [out] string Return);
+  [WmiMethodId(4), Implemented, read, write, Description("Load User default")] void LoadUserDefault([in] string Password, [out] string Return);
+};
+
+class DataForPowerShell {
+};
+
+[WMI, Dynamic : ToInstance, Provider("WmiProv"), Locale("MS\\0x409"), Description("Data for PowerShell, Version 2.93"), guid("{FDAE8C0C-6FA2-49C3-87A0-97483BE485F2}")]
+class ListBIOSSettings : DataForPowerShell {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+  [WmiDataId(1), read, write, Description("List BIOS Settings")] string CurrentSetting;
+};
+
+
+# /sys/bus/wmi/devices/05901221-D566-11D1-B2F0-00A0C9062910-16/bmof
+
+[WMI, Dynamic, Provider("WMIProv"), Locale("MS\\0x409"), Description("Sensor Data that BIOS Set and Driver Read "), guid("{2BC49DEF-7B15-4F05-8BB7-EE37B9547C0B}")]
+class WiFi_GenericSensorData {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, Description("WiFi general sensor get version")] void WlanGetSensorGetVersion([out, Description("Get Sensor Version")] uint32 SensorVersion);
+  [WmiMethodId(2), Implemented, Description("WiFi General Sensor Available")] void WlanGetSensorAvailable([out, Description("Sensor Available")] uint32 SensorAvilable);
+  [WmiMethodId(3), Implemented, Description("WiFi General Get Sensor Data")] void WlanGetSensorData([out, Description("Sensor Data")] uint32 SensorData);
+};
+
+[WMI, Dynamic, Provider("WmiProv"), Description("Event - notify driver of SAR activity"), guid("{A6FEA33E-DABF-46F5-BFC8-460D961BEC9F}")]
+class WiFiSensorNotificationEvent : WmiEvent {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+  [WmiDataId(1), read, write, Description("update WiFi with which the sensor data arrived")] uint32 pData;
+};
+
+
+# /sys/bus/wmi/devices/05901221-D566-11D1-B2F0-00A0C9062910-18/bmof
+
+[WMI, dynamic : ToInstance, provider("WmiProv"), Locale("MS\\0x409"), Description("power data class"), guid("{1F13AB7F-6220-4210-8F8E-8BB5E71EE969}")]
+class FIRE_TEST_EVENT {
+  [key, read] string InstanceName;
+  [read] boolean Active;
+
+  [WmiMethodId(1), Implemented, Description("Debug : Fire event")] void FireEvent([in, Description("Data")] uint32 Data, [out, Description("return")] uint32 ret);
+};

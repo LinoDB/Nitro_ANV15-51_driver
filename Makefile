@@ -1,6 +1,6 @@
 # run the build command when used from the kernel build route -> KERNELDIR
 ifneq ($(KERNELRELEASE),)
-	obj-m := src/hello_world_module.o
+	obj-m := src/char_dev_test.o
 # when run from anywhere else, run make again using the KERNELDIR
 else
 	KERNELDIR ?= /lib/modules/$(shell uname -r)/build
