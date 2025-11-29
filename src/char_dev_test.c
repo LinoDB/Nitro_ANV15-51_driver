@@ -94,26 +94,20 @@ static ssize_t char_dev_test_write(
     loff_t* ppos
 ) {
     struct char_dev_test* dev = file->private_data;
-    char* p = kmalloc(count * sizeof(char), GFP_KERNEL);
-    memset(p, 0, count * sizeof(char));
-    if(copy_from_user(p, buf, count)) {
-        kfree(p);
+    char activate[1];
+    if(copy_from_user(activate, buf, 1)) {
         return -EFAULT;
     }
-    char compstr[] = "01\n";
-    if(p[0] == compstr[0]) {
+    char compstr[] = "01";
+    if(*activate == compstr[0]) {
         dev->active = false;
     }
-    else if(p[0] == compstr[1]) {
+    else if(*activate == compstr[1]) {
         dev->active = true;
     }
     else {
-        if(p[count-1] == compstr[2]) {
-            p[count-1] = 0;
-        }
-        printk(KERN_WARNING "Undefined input for CHAR DEV TEST: %s\n", p);
+        printk(KERN_WARNING "Undefined input for CHAR DEV TEST: %s\n", activate);
     }
-    kfree(p);
     return count;
 }
 
