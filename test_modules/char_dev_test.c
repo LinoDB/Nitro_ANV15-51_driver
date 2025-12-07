@@ -28,7 +28,7 @@ static ssize_t char_dev_test_write(
     loff_t* ppos
 );
 
-static int char_dev_test_open(struct inode* inode, struct file* file); 
+static int char_dev_test_open(struct inode* inode, struct file* file);
 
 static int char_dev_test_release(struct inode* node, struct file* file) {
     return 0;
