@@ -123,7 +123,7 @@ struct wmi_method_input {
     u32 method_id;
 };
 
-static struct wmi_method_input read_battery_charge_limited = {
+static const struct wmi_method_input read_battery_charge_limited = {
     .in = { sizeof(struct battery_charge_limit_in), &check_charge_limit_in },
     .instance = 0,
     .method_id = 20
@@ -134,36 +134,33 @@ static struct wmi_method_input read_battery_charge_limited = {
 ************ WMI methods ************
 ************************************/
 
-// turn this into a generic call that returns a defined output class
-static int check_battery_charge_limited(void) {
-    // thanks to 0x7375646F: https://github.com/0x7375646F/Linuwu-Sense/blob/df84ac7a020efebd4cd1097e73940d93eb959093/src/linuwu_sense.c#L3001
-    if(!batt_wdev) return -1;
+
+static union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct wmi_method_input* input, size_t length) {
+    if(!wdev) return NULL;
     struct acpi_buffer out = { ACPI_ALLOCATE_BUFFER, NULL };
     acpi_status status = wmidev_evaluate_method(
-        batt_wdev,
-        read_battery_charge_limited.instance,
-        read_battery_charge_limited.method_id,
-        &read_battery_charge_limited.in,
+        wdev,
+        input->instance,
+        input->method_id,
+        &input->in,
         &out
     );
     if(ACPI_FAILURE(status)) {
-        printk(KERN_ERR "Nitro Battery Control Driver: Battery status couldn't be read\n");
-        return -1;
+        printk(KERN_ERR "Nitro Battery Control Driver: Couldn't evaluate wmidev method %d\n", input->method_id);
+        return NULL;
     }
+    // thanks to 0x7375646F: https://github.com/0x7375646F/Linuwu-Sense/blob/df84ac7a020efebd4cd1097e73940d93eb959093/src/linuwu_sense.c#L3001
     union acpi_object* obj = out.pointer;
-    int enabled = -1;
-    if (!obj || obj->type != ACPI_TYPE_BUFFER || obj->buffer.length != sizeof(struct battery_charge_limit_out)) {
+    if (!obj || obj->type != ACPI_TYPE_BUFFER || obj->buffer.length != length) {
         printk(
             KERN_ERR "Nitro Battery Control Driver: Battery status returned wrong buffer: type %d, length %d\n",
             obj->type,
             obj->buffer.length
         );
+        kfree(obj);
+        return NULL;
     }
-    else {
-        enabled = ((struct battery_charge_limit_out *)obj->buffer.pointer)->uFunctionStatus[0];
-    }
-    kfree(obj);
-    return enabled;
+    return obj;
 }
 
 
@@ -184,10 +181,15 @@ static ssize_t nitro_battery_read(
     loff_t* ppos
 ) {
     if(*ppos > 0) return 0;
-    int status = check_battery_charge_limited();
+    u8 enabled = -1;
+    union acpi_object* obj = run_wmi_command(batt_wdev, &read_battery_charge_limited, sizeof(struct battery_charge_limit_out));
+    if(obj) {
+        enabled = ((struct battery_charge_limit_out*)obj->buffer.pointer)->uFunctionStatus[0];
+        kfree(obj);
+    }
     char* ret;
     size_t actual_count = 0;
-    switch(status) {
+    switch(enabled) {
         case 1:
             ret = "activated\n";
             actual_count = 10 * sizeof(char);
