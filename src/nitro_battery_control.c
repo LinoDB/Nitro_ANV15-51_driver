@@ -219,12 +219,12 @@ static ssize_t nitro_battery_read(
     size_t actual_count = 0;
     switch(enabled) {
         case 1:
-            ret = "activated\n";
-            actual_count = 10 * sizeof(char);
+            ret = "80%\n";
+            actual_count = 4 * sizeof(char);
             break;
         case 0:
-            ret = "deactivated\n";
-            actual_count = 12 * sizeof(char);
+            ret = "100%\n";
+            actual_count = 5 * sizeof(char);
             break;
         default:
             ret = "unknown\n";
