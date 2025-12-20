@@ -257,12 +257,15 @@ static ssize_t nitro_battery_write(
             break;
         default:
             printk(KERN_WARNING "Undefined input for setting Nitro battery control mode: %s\n", activate);
-            return count;
+            return -EINVAL;
     }
     union acpi_object* obj = run_wmi_command(batt_wdev, &write_battery_charge_limited, sizeof(struct battery_set_charge_limit_out), "Set battery charge limit");
     // ignore output
-    kfree(obj);
-    return count;
+    if(obj) {
+        kfree(obj);
+        return count;
+    }
+    return -EFAULT;
 }
 
 
