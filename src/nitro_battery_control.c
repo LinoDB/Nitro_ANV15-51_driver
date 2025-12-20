@@ -99,22 +99,41 @@ static struct wmi_driver batt_driver = {
     .shutdown = &batt_remove    // needed?
 };
 
-struct __attribute__((packed)) battery_charge_limit_in {
+struct __attribute__((packed)) battery_get_charge_limit_in {
     u8 uBatteryNo;
     u8 uFunctionQuery;
     u8 uReserved[2];
 };
 
-static struct battery_charge_limit_in check_charge_limit_in = {
+static struct battery_get_charge_limit_in check_charge_limit_in = {
     .uBatteryNo = 1,
     .uFunctionQuery = 1,
     .uReserved = {0, 0}
 };
 
-struct __attribute__((packed)) battery_charge_limit_out {
+struct __attribute__((packed)) battery_get_charge_limit_out {
     u8 uFunctionList;
     u8 uReturn[2];
     u8 uFunctionStatus[5];
+};
+
+struct __attribute__((packed)) battery_set_charge_limit_in {
+    u8 uBatteryNo;
+    u8 uFunctionMask;
+    u8 uFunctionStatus;
+    u8 uReservedIn[5];
+};
+
+static struct battery_set_charge_limit_in set_charge_limit_in = {
+    .uBatteryNo = 1,
+    .uFunctionMask = 1,
+    .uFunctionStatus = 0,
+    .uReservedIn = {0, 0, 0, 0, 0}
+};
+
+struct __attribute__((packed)) battery_set_charge_limit_out {
+    u16 uReturn;
+    u16 uReservedOut;
 };
 
 struct wmi_method_input {
@@ -124,10 +143,18 @@ struct wmi_method_input {
 };
 
 static const struct wmi_method_input read_battery_charge_limited = {
-    .in = { sizeof(struct battery_charge_limit_in), &check_charge_limit_in },
+    .in = { sizeof(struct battery_get_charge_limit_in), &check_charge_limit_in },
     .instance = 0,
     .method_id = 20
 };
+
+static const struct wmi_method_input write_battery_charge_limited = {
+    .in = { sizeof(struct battery_set_charge_limit_in), &set_charge_limit_in },
+    .instance = 0,
+    .method_id = 21
+};
+
+u8* set_battery_limit = &set_charge_limit_in.uFunctionStatus;
 
 
 /************************************
@@ -135,7 +162,7 @@ static const struct wmi_method_input read_battery_charge_limited = {
 ************************************/
 
 
-static union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct wmi_method_input* input, size_t length) {
+static union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct wmi_method_input* input, size_t length, const char* call_name) {
     if(!wdev) return NULL;
     struct acpi_buffer out = { ACPI_ALLOCATE_BUFFER, NULL };
     acpi_status status = wmidev_evaluate_method(
@@ -146,14 +173,15 @@ static union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct 
         &out
     );
     if(ACPI_FAILURE(status)) {
-        printk(KERN_ERR "Nitro Battery Control Driver: Couldn't evaluate wmidev method %d\n", input->method_id);
+        printk(KERN_ERR "Nitro Control Driver: Couldn't evaluate wmidev method %d (%s)\n", input->method_id, call_name);
         return NULL;
     }
     // thanks to 0x7375646F: https://github.com/0x7375646F/Linuwu-Sense/blob/df84ac7a020efebd4cd1097e73940d93eb959093/src/linuwu_sense.c#L3001
     union acpi_object* obj = out.pointer;
     if (!obj || obj->type != ACPI_TYPE_BUFFER || obj->buffer.length != length) {
         printk(
-            KERN_ERR "Nitro Battery Control Driver: Battery status returned wrong buffer: type %d, length %d\n",
+            KERN_ERR "Nitro Control Driver: '%s' returned wrong buffer: type %d, length %d\n",
+            call_name,
             obj->type,
             obj->buffer.length
         );
@@ -182,9 +210,9 @@ static ssize_t nitro_battery_read(
 ) {
     if(*ppos > 0) return 0;
     u8 enabled = -1;
-    union acpi_object* obj = run_wmi_command(batt_wdev, &read_battery_charge_limited, sizeof(struct battery_charge_limit_out));
+    union acpi_object* obj = run_wmi_command(batt_wdev, &read_battery_charge_limited, sizeof(struct battery_get_charge_limit_out), "Read battery charge limit");
     if(obj) {
-        enabled = ((struct battery_charge_limit_out*)obj->buffer.pointer)->uFunctionStatus[0];
+        enabled = ((struct battery_get_charge_limit_out*)obj->buffer.pointer)->uFunctionStatus[0];
         kfree(obj);
     }
     char* ret;
@@ -220,16 +248,20 @@ static ssize_t nitro_battery_write(
     if(copy_from_user(activate, buf, 1)) {
         return -EFAULT;
     }
-    char compstr[] = "01";
-    if(*activate == compstr[0]) {
-        // dev->active = false;
+    switch(*activate) {
+        case '0':
+            *set_battery_limit = 0;
+            break;
+        case '1':
+            *set_battery_limit = 1;
+            break;
+        default:
+            printk(KERN_WARNING "Undefined input for setting Nitro battery control mode: %s\n", activate);
+            return count;
     }
-    else if(*activate == compstr[1]) {
-        // dev->active = true;
-    }
-    else {
-        printk(KERN_WARNING "Undefined input for Nitro Battery Control Driver: %s\n", activate);
-    }
+    union acpi_object* obj = run_wmi_command(batt_wdev, &write_battery_charge_limited, sizeof(struct battery_set_charge_limit_out), "Set battery charge limit");
+    // ignore output
+    kfree(obj);
     return count;
 }
 
