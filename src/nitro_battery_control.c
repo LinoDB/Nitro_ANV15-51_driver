@@ -65,7 +65,7 @@ struct nitro_battery {
 
 static struct nitro_battery _device = {
     .initialized = false,
-    .name = "nitro_battery"
+    .name = "nitro_battery_charge_limit"
 };
 
 static const struct wmi_device_id batt_dev_id = {
