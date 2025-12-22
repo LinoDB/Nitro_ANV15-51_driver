@@ -65,6 +65,10 @@ static int __init nitro__av15_51_init(void) {
             printk(KERN_ERR "Nitro ANV15-51 driver %s init error: couldn't add c_dev: %d\n", char_dev->name, err);
             goto unreg_dev;
         }
+        if(!wmi_has_guid(char_dev->driver->id_table->guid_string)) {
+            printk(KERN_ERR "Nitro ANV15-51 driver %s init error: WMI device GUID '%s' doesn't exist", char_dev->name, char_dev->driver->id_table->guid_string);
+            goto del_cdev;
+        }
         if(wmi_driver_register(char_dev->driver)) {
             printk(KERN_ERR "Nitro ANV15-51 driver %s init error: Couldn't register WMI driver", char_dev->name);
             goto del_cdev;
