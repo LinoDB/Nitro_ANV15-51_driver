@@ -75,7 +75,6 @@ static int __init nitro__av15_51_init(void) {
         }
         char_dev->initialized = true;
         _device.initialized = true;
-        printk(KERN_INFO "Nitro ANV15-51 driver device '/dev/%s' was initialized properly", char_dev->file_name);
         continue;
         del_cdev: cdev_del(&char_dev->cdev);
         unreg_dev: unregister_device(_device.major, char_dev);
@@ -95,13 +94,11 @@ static void __exit nitro__av15_51_exit(void) {
         for(int i = 0; i < _device.char_device_count; i++) {
             struct nitro_char_dev* char_dev = _device.char_devs[i];
             if(!char_dev->initialized) {
-                printk(KERN_INFO "Nitro ANV15-51 driver device '/dev/%s' wasn't initialized properly\n", char_dev->file_name);
                 continue;
             }
             wmi_driver_unregister(char_dev->driver);
             cdev_del(&char_dev->cdev);
             unregister_device(_device.major, char_dev);
-            printk(KERN_INFO "Removed Nitro ANV15-51 driver device '/dev/%s'\n", char_dev->file_name);
         }
         unregister_chrdev_region(_device.devno, _device.char_device_count);
         printk(KERN_INFO "Removed Nitro ANV15-51 driver\n");
