@@ -14,7 +14,7 @@ clean:
 
 install: all
 	sudo rmmod $(MODNAME) 2> /dev/null || true
-	sudo mkdir $(MODDIR) 2> /dev/null || true
+	sudo mkdir $(MODDIR) || true
 	sudo cp src/$(MODNAME).ko.zst $(MODDIR) 2> /dev/null || sudo cp src/$(MODNAME).ko $(MODDIR)
 	echo "$(MODNAME)" | sudo tee /etc/modules-load.d/$(MODNAME).conf > /dev/null
 	sudo depmod -a
@@ -22,5 +22,5 @@ install: all
 
 uninstall:
 	sudo rmmod $(MODNAME) 2> /dev/null || true
-	sudo rm -r $(MODDIR) 2> /dev/null || true
-	sudo rm /etc/modules-load.d/$(MODNAME).conf 2> /dev/null || true
+	sudo rm -r $(MODDIR) || true
+	sudo rm /etc/modules-load.d/$(MODNAME).conf || true
