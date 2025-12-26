@@ -19,26 +19,11 @@ struct battery_get_charge_limit_in check_charge_limit_in = {
     .uReserved = {0, 0}
 };
 
-struct battery_set_charge_limit_in set_charge_limit_in = {
-    .uBatteryNo = 1,
-    .uFunctionMask = 1,
-    .uFunctionStatus = 0,
-    .uReservedIn = {0, 0, 0, 0, 0}
-};
-
 const struct wmi_method_input read_battery_charge_limited = {
     .in = { sizeof(struct battery_get_charge_limit_in), &check_charge_limit_in },
     .instance = 0,
     .method_id = 20
 };
-
-const struct wmi_method_input write_battery_charge_limited = {
-    .in = { sizeof(struct battery_set_charge_limit_in), &set_charge_limit_in },
-    .instance = 0,
-    .method_id = 21
-};
-
-u8* set_battery_limit = &set_charge_limit_in.uFunctionStatus;
 
 
 /************************************
@@ -156,12 +141,24 @@ ssize_t nitro_battery_write(
     if(copy_from_user(activate, buf, 1)) {
         return -EFAULT;
     }
+    struct battery_set_charge_limit_in set_charge_limit_in = {
+    .uBatteryNo = 1,
+    .uFunctionMask = 1,
+    .uFunctionStatus = 0,
+    .uReservedIn = {0, 0, 0, 0, 0}
+    };
+    const struct wmi_method_input write_battery_charge_limited = {
+        .in = { sizeof(struct battery_set_charge_limit_in), &set_charge_limit_in },
+        .instance = 0,
+        .method_id = 21
+    };
+
     switch(*activate) {
         case '0':
-            *set_battery_limit = 0;
+            set_charge_limit_in.uFunctionStatus = 0;
             break;
         case '1':
-            *set_battery_limit = 1;
+            set_charge_limit_in.uFunctionStatus = 1;
             break;
         default:
             printk(KERN_WARNING "Undefined input for setting Nitro battery control mode: %s\n", activate);
