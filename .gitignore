@@ -1,7 +1,7 @@
 .*
 !.gitignore
 *.mod*
-*.ko
+*.ko*
 *.o
 Module*
 module*

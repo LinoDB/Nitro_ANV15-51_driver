@@ -7,6 +7,7 @@ src/nitro_anv15_51-y := src/nitro_anv15_51_module.o src/misc.o src/nitro_battery
 	
 all:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) modules
+	zstd src/$(MODNAME).ko 2> /dev/null || true
 
 clean:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) clean
@@ -14,7 +15,7 @@ clean:
 install: all
 	sudo rmmod $(MODNAME) 2> /dev/null || true
 	sudo mkdir $(MODDIR) 2> /dev/null || true
-	sudo cp src/$(MODNAME).ko $(MODDIR)
+	sudo cp src/$(MODNAME).ko.zst $(MODDIR) 2> /dev/null || sudo cp src/$(MODNAME).ko $(MODDIR)
 	echo "$(MODNAME)" | sudo tee /etc/modules-load.d/$(MODNAME).conf > /dev/null
 	sudo depmod -a
 	sudo modprobe $(MODNAME)
