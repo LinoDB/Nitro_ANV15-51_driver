@@ -35,8 +35,6 @@ struct nitro_char_dev {
 ********* Device management *********
 ************************************/
 
-void unregister_device(const unsigned int major, struct nitro_char_dev* char_dev);
-
 int all_dev_uevent(const struct device *dev, struct kobj_uevent_env *env);
 
 

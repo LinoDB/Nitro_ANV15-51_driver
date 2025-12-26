@@ -1,7 +1,6 @@
 #include "misc.h"
 
 #include <linux/acpi.h>
-#include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/wmi.h>
 
@@ -14,12 +13,6 @@ int all_dev_uevent(const struct device *dev, struct kobj_uevent_env *env) {
     // give the device created read+write permissions 666
     add_uevent_var(env, "DEVMODE=%#o", 0666);
     return 0;
-}
-
-void unregister_device(const unsigned int major, struct nitro_char_dev* char_dev) {
-    device_destroy(char_dev->dev_cl, MKDEV(major, char_dev->minor));
-    class_destroy(char_dev->dev_cl);
-    char_dev->initialized = false;
 }
 
 
