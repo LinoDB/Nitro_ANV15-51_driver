@@ -13,6 +13,25 @@ This is a project to learn about driver development on linux.
 
 This driver is meant to be used only on the PC model **Acer Nitro ANV15-51**. Even if using this specific model, it can neither be guaranteed that this driver doesn't damage the system nor that it works properly. Proceed at your own risk!
 
+
+### For testing
+
+Use the following commands to test the module:
+
+```bash
+# compile the module
+make
+
+# load the module
+sudo insmod src/nitro_anv15_51.ko
+
+# remove the module
+sudo rmmod nitro_anv15_51
+```
+
+
+### System-wide
+
 Run
 
 ```bash
@@ -26,6 +45,7 @@ make uninstall
 ```
 
 to uninstall it.
+
 
 ## Use
 
