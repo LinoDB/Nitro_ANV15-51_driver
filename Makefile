@@ -7,7 +7,7 @@ src/nitro_anv15_51-y := src/nitro_anv15_51_module.o src/misc.o src/nitro_battery
 	
 all:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) modules
-	zstd src/$(MODNAME).ko 2> /dev/null || true
+	zstd -f src/$(MODNAME).ko 2> /dev/null || true
 
 clean:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) clean
