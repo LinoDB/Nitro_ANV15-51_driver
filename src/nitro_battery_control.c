@@ -1,12 +1,15 @@
 #include "nitro_battery_control.h"
 
-#include <asm/uaccess.h>
 #include <linux/acpi.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/kdev_t.h>
 #include <linux/kernel.h>
+#include <linux/semaphore.h>
 #include <linux/wmi.h>
+
+
+DEFINE_SEMAPHORE(nitro_battery_lock, 1);
 
 
 /************************************
@@ -147,11 +150,6 @@ ssize_t nitro_battery_write(
     .uFunctionStatus = 0,
     .uReservedIn = {0, 0, 0, 0, 0}
     };
-    const struct wmi_method_input write_battery_charge_limited = {
-        .in = { sizeof(struct battery_set_charge_limit_in), &set_charge_limit_in },
-        .instance = 0,
-        .method_id = 21
-    };
 
     switch(*activate) {
         case '0':
@@ -164,7 +162,14 @@ ssize_t nitro_battery_write(
             printk(KERN_WARNING "Undefined input for setting Nitro battery control mode: %s\n", activate);
             return -EINVAL;
     }
+    struct wmi_method_input write_battery_charge_limited = {
+        .in = { sizeof(struct battery_set_charge_limit_in), &set_charge_limit_in },
+        .instance = 0,
+        .method_id = 21
+    };
+    if(down_interruptible(&nitro_battery_lock)) return -ERESTARTSYS;
     union acpi_object* obj = run_wmi_command(nitro_battery_char_dev.wdev, &write_battery_charge_limited, sizeof(struct battery_set_charge_limit_out), "Set battery charge limit");
+    up(&nitro_battery_lock);
     // ignore output
     if(obj) {
         kfree(obj);
