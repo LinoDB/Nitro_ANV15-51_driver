@@ -14,8 +14,7 @@ clean:
 
 install: all
 	sudo rmmod $(MODNAME) 2> /dev/null || true
-	sudo mkdir $(MODDIR) || true
-	sudo cp src/$(MODNAME).ko.zst $(MODDIR) 2> /dev/null || sudo cp src/$(MODNAME).ko $(MODDIR)
+	sudo install -Dm 644 src/$(MODNAME).ko.zst $(MODDIR)/$(MODNAME).ko.zst 2> /dev/null || sudo install -Dm 644 src/$(MODNAME).ko $(MODDIR)/$(MODNAME).ko
 	echo "$(MODNAME)" | sudo tee /etc/modules-load.d/$(MODNAME).conf > /dev/null
 	sudo depmod -a
 	sudo modprobe $(MODNAME)
