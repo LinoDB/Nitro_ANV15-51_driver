@@ -2,19 +2,19 @@ MODNAME = nitro_anv15_51
 KERNELDIR = /lib/modules/$(shell uname -r)
 MODDIR = $(KERNELDIR)/kernel/drivers/$(MODNAME)
 PWD := $(shell pwd)
-obj-m := src/$(MODNAME).o
-src/nitro_anv15_51-y := src/nitro_anv15_51_module.o src/misc.o src/nitro_battery_control.o
+obj-m := $(MODNAME).o
+$(MODNAME)-y := nitro_anv15_51_module.o misc.o nitro_battery_control.o
 	
 all:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) modules
-	zstd -f src/$(MODNAME).ko 2> /dev/null || true
+	zstd -f $(MODNAME).ko 2> /dev/null || true
 
 clean:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) clean
 
 install: all
 	sudo rmmod $(MODNAME) 2> /dev/null || true
-	sudo install -Dm 644 src/$(MODNAME).ko.zst $(MODDIR)/$(MODNAME).ko.zst 2> /dev/null || sudo install -Dm 644 src/$(MODNAME).ko $(MODDIR)/$(MODNAME).ko
+	sudo install -Dm 644 $(MODNAME).ko.zst $(MODDIR)/$(MODNAME).ko.zst 2> /dev/null || sudo install -Dm 644 $(MODNAME).ko $(MODDIR)/$(MODNAME).ko
 	echo "$(MODNAME)" | sudo tee /etc/modules-load.d/$(MODNAME).conf > /dev/null
 	sudo depmod -a
 	sudo modprobe $(MODNAME)
