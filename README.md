@@ -30,24 +30,58 @@ sudo rmmod nitro_anv15_51
 ```
 
 
-### System-wide
+### System-wide installation for the current kernel (gets removed by kernel updates)
 
 Run
 
 ```bash
 make install
+sudo modprobe nitro_anv15_51
+
+# optionally load the module at boot automatically
+make autostart
 ```
 
-to install the driver globally and
+to install the driver globally and run
 
 ```bash
 make uninstall
 ```
 
-to uninstall it.
+to uninstall it (including 'autostart').
 
 
-## Use
+### System-wide installation as a DKMS package for Arch
+
+Create the package and install it (also works for updating to a new package version)
+
+```bash
+makepkg -i --clean
+```
+
+and load the driver:
+
+```bash
+sudo modprobe nitro_anv15_51
+
+# optionally load the module at boot automatically
+make autostart
+```
+<br></br>
+Use pacman to uninstall the package, e.g.
+
+```bash
+sudo pacman -Rs nitro_anv15_51-dkms
+```
+
+and to remove the configuration to load the package automatically, use:
+
+```bash
+make autostart-remove
+```
+
+
+## Usage
 
 Check current charge limit:
 
