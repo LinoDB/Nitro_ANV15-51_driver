@@ -24,7 +24,7 @@ sha256sums=(
     'a3d266825dd41e91a4c33caad6ea293b17161668db0867d7654d0884b59eb40f'
     '7aa82ab8dd3268b6aa8bd8106190290971b499e1084c81da480704e71cc55dfb'
     '9da212125ec90af239371690cdc904d6dff6831cac1d09cc214e717d527a6325'
-    'e84c7cec6ff19781757e9eeb320ffac6ea96d51c7eec04153930b0f049898e7c'
+    '0ab3cef85c64eedcfd2e7e7812bae133b0bee26bebac6edce02d3169ce0fc49c'
 )
 package() {
     install -Dm644 dkms.conf "${pkgdir}"/usr/src/${_pkgbase}-${pkgver}/dkms.conf

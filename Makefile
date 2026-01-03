@@ -7,12 +7,12 @@ $(MODNAME)-y := nitro_anv15_51_module.o misc.o nitro_battery_control.o
 	
 all:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) modules
-	zstd -f $(MODNAME).ko 2> /dev/null || true
 
 clean:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) clean
 
 install: all
+	zstd -f $(MODNAME).ko 2> /dev/null || true
 	sudo rmmod $(MODNAME) 2> /dev/null || true
 	sudo install -Dm 644 $(MODNAME).ko.zst $(MODDIR)/$(MODNAME).ko.zst 2> /dev/null || sudo install -Dm 644 $(MODNAME).ko $(MODDIR)/$(MODNAME).ko
 	sudo depmod -a
