@@ -1,6 +1,6 @@
 MODNAME = nitro_anv15_51
 KERNELDIR = /lib/modules/$(shell uname -r)
-MODDIR = $(KERNELDIR)/kernel/drivers/$(MODNAME)
+MODDIR = $(KERNELDIR)/kernel/drivers/misc
 PWD := $(shell pwd)
 obj-m := $(MODNAME).o
 $(MODNAME)-y := nitro_anv15_51_module.o misc.o nitro_battery_control.o
@@ -21,5 +21,5 @@ install: all
 
 uninstall:
 	sudo rmmod $(MODNAME) 2> /dev/null || true
-	sudo rm -r $(MODDIR) || true
+	sudo rm $(MODDIR)/$(MODNAME).ko* || true
 	sudo rm /etc/modules-load.d/$(MODNAME).conf || true
