@@ -1,1 +1,0 @@
-/home/archlino/Documents/Repos/Nitro_ANV15-51_driver/misc.h
