@@ -15,11 +15,14 @@ clean:
 install: all
 	sudo rmmod $(MODNAME) 2> /dev/null || true
 	sudo install -Dm 644 $(MODNAME).ko.zst $(MODDIR)/$(MODNAME).ko.zst 2> /dev/null || sudo install -Dm 644 $(MODNAME).ko $(MODDIR)/$(MODNAME).ko
-	echo "$(MODNAME)" | sudo tee /etc/modules-load.d/$(MODNAME).conf > /dev/null
 	sudo depmod -a
-	sudo modprobe $(MODNAME)
 
-uninstall:
+autostart:
+	echo "$(MODNAME)" | sudo tee /etc/modules-load.d/$(MODNAME).conf > /dev/null
+
+autostart-remove:
+	sudo rm /etc/modules-load.d/$(MODNAME).conf || true
+
+uninstall: autostart-remove
 	sudo rmmod $(MODNAME) 2> /dev/null || true
 	sudo rm $(MODDIR)/$(MODNAME).ko* || true
-	sudo rm /etc/modules-load.d/$(MODNAME).conf || true
