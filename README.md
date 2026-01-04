@@ -30,7 +30,7 @@ sudo rmmod nitro_anv15_51
 ```
 
 
-### System-wide installation for the current kernel (gets removed by kernel updates)
+### System-wide installation for the current kernel (gets outdated by kernel updates and leaves /lib/modules dir hanging - uninstall before kernel update)
 
 Run
 
