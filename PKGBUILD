@@ -7,24 +7,24 @@ arch=('x86_64')
 license=('GPL3')
 depends=('dkms')
 source=(
+    "Makefile"
+    "dkms.conf"
     "misc.c"
     "misc.h"
     "nitro_anv15_51_module.c"
     "nitro_anv15_51_module.h"
     "nitro_battery_control.c"
     "nitro_battery_control.h"
-    "dkms.conf"
-    "Makefile"
 )
 sha256sums=(
+    '8b54cd0df00fb2ad54f40993f119738c9364c090b4385b3c31ccd6bc2b05dc79'
+    '9da212125ec90af239371690cdc904d6dff6831cac1d09cc214e717d527a6325'
     'defd68919b030a643c10747c3742a0cfbe5a7dffe5f385e79f2d2f2e88b79c8c'
     '783bf0b6304375efc9fb022fd8f18354375b5aeb9553d5614734a497e9e12b65'
     'b30e3e93b80e253a3e3c5880e5d6931522f92a8e8d7ba86315c96e976a3726fe'
     '20d3c35b79ebb864a95cf99885dfcea90a87a8522139e190d4d56669f3e8a5ed'
-    'a3d266825dd41e91a4c33caad6ea293b17161668db0867d7654d0884b59eb40f'
-    '7aa82ab8dd3268b6aa8bd8106190290971b499e1084c81da480704e71cc55dfb'
-    '9da212125ec90af239371690cdc904d6dff6831cac1d09cc214e717d527a6325'
-    '0ab3cef85c64eedcfd2e7e7812bae133b0bee26bebac6edce02d3169ce0fc49c'
+    'eb972babcb358355e99c39eca0eb63480c1d50b6c51a2a7eede48a61c14ea119'
+    '7aa82ab8dd3268b6aa8bd8106190290971b499e1084c81da480704e71cc55dfb'    
 )
 package() {
     install -Dm644 dkms.conf "${pkgdir}"/usr/src/${_pkgbase}-${pkgver}/dkms.conf

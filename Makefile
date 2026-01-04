@@ -1,5 +1,9 @@
 MODNAME = nitro_anv15_51
-KERNELDIR = /lib/modules/$(shell uname -r)
+ifneq ($(KERNELRELEASE),)
+	KERNELDIR = /lib/modules/$(KERNELRELEASE)
+else
+	KERNELDIR = /lib/modules/$(shell uname -r)
+endif
 MODDIR = $(KERNELDIR)/kernel/drivers/misc
 PWD := $(shell pwd)
 obj-m := $(MODNAME).o

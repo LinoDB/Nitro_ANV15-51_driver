@@ -54,7 +54,7 @@ struct wmi_driver batt_driver = {
     .id_table = &batt_dev_id,
     .probe = &batt_probe,
     .remove = &batt_remove,     // needed?
-    .shutdown = &batt_remove    // needed?
+    // .shutdown = &batt_remove    // not yet in LTS Kernel - needed?
 };
 
 struct nitro_char_dev nitro_battery_char_dev = {
