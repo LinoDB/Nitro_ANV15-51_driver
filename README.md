@@ -76,7 +76,7 @@ make autostart
 Use pacman to uninstall the package:
 
 ```bash
-sudo pacman -Rs nitro_anv15_51-dkms
+sudo pacman -Rsn nitro_anv15_51-dkms
 ```
 
 Remove the auto-load configuration:
