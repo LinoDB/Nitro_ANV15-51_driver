@@ -95,7 +95,7 @@ ssize_t nitro_battery_read(
     loff_t* ppos
 ) {
     if(*ppos > 0) return 0;
-    u8 enabled = -1;
+    u8 enabled = 2;
     union acpi_object* obj = run_wmi_command(nitro_battery_char_dev.wdev, &read_battery_charge_limited, sizeof(struct battery_get_charge_limit_out), "Read battery charge limit");
     if(obj) {
         enabled = ((struct battery_get_charge_limit_out*)obj->buffer.pointer)->uFunctionStatus[0];
