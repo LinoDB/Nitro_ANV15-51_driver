@@ -31,10 +31,6 @@ ssize_t nitro_battery_write(
     loff_t* ppos
 );
 
-int nitro_battery_open(struct inode* inode, struct file* file);
-
-int nitro_battery_release(struct inode* node, struct file* file);
-
 
 /************************************
 *** Device and utility structures ***

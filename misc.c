@@ -1,6 +1,7 @@
 #include "misc.h"
 
 #include <linux/acpi.h>
+#include <linux/fs.h>
 #include <linux/slab.h>
 #include <linux/wmi.h>
 
@@ -12,6 +13,21 @@
 int all_dev_uevent(const struct device *dev, struct kobj_uevent_env *env) {
     // give the device created read+write permissions 666
     add_uevent_var(env, "DEVMODE=%#o", 0666);
+    return 0;
+}
+
+
+/************************************
+****** File operation methods *******
+************************************/
+
+int nitro_open(struct inode* inode, struct file* file) {
+    // obtain 'nitro_char_dev' from the cdev structure
+    file->private_data = container_of(inode->i_cdev, struct nitro_char_dev, cdev);
+    return 0;
+}
+
+int nitro_release(struct inode* node, struct file* file) {
     return 0;
 }
 

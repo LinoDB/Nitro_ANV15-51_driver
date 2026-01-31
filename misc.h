@@ -32,6 +32,15 @@ struct nitro_char_dev {
 
 
 /************************************
+* File operation method definitions *
+************************************/
+
+int nitro_open(struct inode* inode, struct file* file);
+
+int nitro_release(struct inode* node, struct file* file);
+
+
+/************************************
 ********* Device management *********
 ************************************/
 

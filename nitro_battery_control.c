@@ -37,8 +37,8 @@ struct file_operations batt_fops = {
     .owner = THIS_MODULE,
     .read = nitro_battery_read,
     .write = nitro_battery_write,
-    .open = nitro_battery_open,
-    .release = nitro_battery_release
+    .open = nitro_open,
+    .release = nitro_release
 };
 
 const struct wmi_device_id batt_dev_id = {
@@ -87,16 +87,6 @@ void batt_remove(struct wmi_device *wdev) {
 /************************************
 ****** File operation methods *******
 ************************************/
-
-int nitro_battery_release(struct inode* node, struct file* file) {
-    return 0;
-}
-
-int nitro_battery_open(struct inode* inode, struct file* file) {
-    // obtain 'nitro_char_dev' from the cdev structure
-    file->private_data = container_of(inode->i_cdev, struct nitro_char_dev, cdev);
-    return 0;
-}
 
 ssize_t nitro_battery_read(
     struct file* file,
