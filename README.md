@@ -26,7 +26,7 @@ Use the following commands to test the driver module:
 make
 
 # load the module
-sudo insmod src/nitro_anv15_51.ko
+sudo insmod nitro_anv15_51.ko
 
 # remove the module
 sudo rmmod nitro_anv15_51
