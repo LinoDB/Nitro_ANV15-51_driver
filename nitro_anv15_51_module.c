@@ -15,9 +15,11 @@
 ************************************/
 
 extern struct nitro_char_dev nitro_battery_char_dev;
+extern struct nitro_char_dev nitro_profile_char_dev;
 
 struct nitro_char_dev* character_devices[] = {
     &nitro_battery_char_dev,
+    &nitro_profile_char_dev,
 };
 
 struct nitro_anv15_51 _device = {

@@ -7,7 +7,7 @@ endif
 MODDIR = $(KERNELDIR)/kernel/drivers/misc
 PWD := $(shell pwd)
 obj-m := $(MODNAME).o
-$(MODNAME)-y := nitro_anv15_51_module.o misc.o nitro_battery_control.o
+$(MODNAME)-y := nitro_anv15_51_module.o misc.o nitro_battery_control.o nitro_power_profile.o
 	
 all:
 	$(MAKE) -C $(KERNELDIR)/build M=$(PWD) modules
