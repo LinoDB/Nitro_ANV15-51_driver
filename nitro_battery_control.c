@@ -101,6 +101,10 @@ ssize_t nitro_battery_read(
         enabled = ((struct battery_get_charge_limit_out*)obj->buffer.pointer)->uFunctionStatus[0];
         kfree(obj);
     }
+    else {
+        return -EFAULT;
+    }
+
     char* ret;
     size_t actual_count = 0;
     switch(enabled) {
@@ -113,6 +117,7 @@ ssize_t nitro_battery_read(
             actual_count = 5 * sizeof(char);
             break;
         default:
+            printk(KERN_ERR "Found unknown nitro battery charge limit number '%u'", enabled);
             ret = "unknown\n";
             actual_count = 8 * sizeof(char);
     }

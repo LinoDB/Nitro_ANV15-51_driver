@@ -24,13 +24,6 @@ ssize_t nitro_profile_read(
     loff_t* ppos
 );
 
-ssize_t nitro_overclock_read(
-    struct file* file,
-    char __user* buf,
-    size_t count,
-    loff_t* ppos
-);
-
 ssize_t nitro_profile_write(
     struct file* file,
     const char __user* buf,
@@ -67,27 +60,5 @@ struct __attribute__((packed)) profile_write_in {
 struct __attribute__((packed)) profile_write_out {
     u32 gmOutput;
 };
-
-struct __attribute__((packed)) overclocking_get_in {
-    u8 Reserved[4];
-};
-
-struct __attribute__((packed)) overclocking_get_out {
-    u8 ReturnCode;
-    u8 ReturnOCProfile;
-    u8 OCStructure[512];
-};
-
-// struct __attribute__((packed)) battery_set_charge_limit_in {
-//     u8 uBatteryNo;
-//     u8 uFunctionMask;
-//     u8 uFunctionStatus;
-//     u8 uReservedIn[5];
-// };
-
-// struct __attribute__((packed)) battery_set_charge_limit_out {
-//     u16 uReturn;
-//     u16 uReservedOut;
-// };
 
 #endif

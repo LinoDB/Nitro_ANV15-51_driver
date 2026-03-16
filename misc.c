@@ -70,9 +70,9 @@ union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct wmi_met
 ********** Helper methods ***********
 ************************************/
 
-int init_str_equal(char* a, char* b, int len) {
+bool init_str_equal(char* a, char* b, int len) {
     for(int i = 0; i < len; i++) {
-        if(a[i] != b[i]) return -1;
+        if(a[i] != b[i]) return false;
     }
-    return 0;
+    return true;
 }
