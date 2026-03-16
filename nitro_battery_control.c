@@ -135,10 +135,10 @@ ssize_t nitro_battery_write(
         return -EFAULT;
     }
     struct battery_set_charge_limit_in set_charge_limit_in = {
-    .uBatteryNo = 1,
-    .uFunctionMask = 1,
-    .uFunctionStatus = 0,
-    .uReservedIn = {0, 0, 0, 0, 0}
+        .uBatteryNo = 1,
+        .uFunctionMask = 1,
+        .uFunctionStatus = 0,
+        .uReservedIn = {0, 0, 0, 0, 0}
     };
 
     switch(*activate) {

@@ -64,3 +64,15 @@ union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct wmi_met
     }
     return obj;
 }
+
+
+/************************************
+********** Helper methods ***********
+************************************/
+
+int init_str_equal(char* a, char* b, int len) {
+    for(int i = 0; i < len; i++) {
+        if(a[i] != b[i]) return -1;
+    }
+    return 0;
+}

@@ -53,4 +53,11 @@ int all_dev_uevent(const struct device *dev, struct kobj_uevent_env *env);
 
 union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct wmi_method_input* input, size_t length, const char* call_name);
 
+
+/************************************
+********** Helper methods ***********
+************************************/
+
+int init_str_equal(char* a, char* b, int len);
+
 #endif

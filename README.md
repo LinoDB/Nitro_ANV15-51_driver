@@ -11,13 +11,63 @@ This is a project to learn about driver development on linux.
 - https://github.com/0x7375646F/Linuwu-Sense
 - https://github.com/DetuxTR/AcerNitroLinuxGamingDriver
 
-## Installation
+
+# Installation
 
 > [!CAUTION]
 > This driver is meant to be used only on the laptop model **Acer Nitro ANV15-51**. Even when using this specific model, it can neither be guaranteed that this driver doesn't damage the system nor that it works properly. Proceed at your own risk!
 
+Clone the repository and change working directory:
+```bash
+git clone https://github.com/LinoDB/Nitro_ANV15-51_driver.git && cd Nitro_ANV15-51_driver
+```
 
-### For testing without proper installation
+This driver will be compiled during installation. Make sure you have the headers package for your kernel installed before proceeding (e.g. the `linux-headers` package for the `linux` kernel on Arch Linux):
+
+```bash
+pacman -S linux-headers
+```
+
+## System-wide installation as a DKMS package (recommended)
+
+_These instructions use installation commands for the Arch Linux distribution._
+
+Using DKMS, this kernel module (driver) will be re-compiled automatically when the kernel is updated. This is a great benefit, since the module is not included in the Linux distribution as a package by default, which means that it would need to be reinstalled after every kernel update. To keep the module installed, up to date, and working automatically, make sure you have the `dkms` module installed:
+```bash
+pacman -S dkms
+```
+
+Create the `nitro_anv15_51-dkms` package and install it (this command also works for updating the installed package to a newer version):
+
+```bash
+makepkg -i --clean
+```
+
+Load the driver module:
+
+```bash
+sudo modprobe nitro_anv15_51
+
+# optionally auto-load the driver module at boot
+make autostart
+```
+
+### Uninstall
+
+Use pacman to uninstall the package:
+
+```bash
+sudo pacman -Rsn nitro_anv15_51-dkms
+```
+
+Remove the auto-load configuration:
+
+```bash
+make autostart-remove
+```
+
+
+## Testing the module without a proper installation
 
 Use the following commands to test the driver module:
 
@@ -33,7 +83,7 @@ sudo rmmod nitro_anv15_51
 ```
 
 
-### System-wide installation for the current kernel
+## System-wide installation for the current kernel
 
 > [!WARNING]
 > During a kernel update, this installation gets outdated (lost) and the current kernel's `/lib/modules/<kernel-version>` directory won't be deleted - uninstall before updating the current kernel.
@@ -46,7 +96,7 @@ sudo modprobe nitro_anv15_51
 make autostart
 ```
 
-#### Uninstall
+### Uninstall
 
 ```bash
 # also removes the auto-load configuration
@@ -54,39 +104,7 @@ make uninstall
 ```
 
 
-### System-wide installation as a DKMS package for Arch (recommended)
-
-Create the package and install it (also works for updating the installed package to a newer version):
-
-```bash
-makepkg -i --clean
-```
-
-Load the driver module:
-
-```bash
-sudo modprobe nitro_anv15_51
-
-# optionally auto-load the driver module at boot
-make autostart
-```
-
-#### Uninstall
-
-Use pacman to uninstall the package:
-
-```bash
-sudo pacman -Rsn nitro_anv15_51-dkms
-```
-
-Remove the auto-load configuration:
-
-```bash
-make autostart-remove
-```
-
-
-## Usage
+# Usage
 
 Check current charge limit:
 

@@ -31,12 +31,12 @@ ssize_t nitro_overclock_read(
     loff_t* ppos
 );
 
-// ssize_t nitro_battery_write(
-//     struct file* file,
-//     const char __user* buf,
-//     size_t count,
-//     loff_t* ppos
-// );
+ssize_t nitro_profile_write(
+    struct file* file,
+    const char __user* buf,
+    size_t count,
+    loff_t* ppos
+);
 
 
 /************************************
@@ -58,6 +58,14 @@ struct __attribute__((packed)) profile_get_in {
 
 struct __attribute__((packed)) profile_get_out {
     u64 gmOutput;
+};
+
+struct __attribute__((packed)) profile_write_in {
+    u64 gmInput;
+};
+
+struct __attribute__((packed)) profile_write_out {
+    u32 gmOutput;
 };
 
 struct __attribute__((packed)) overclocking_get_in {
