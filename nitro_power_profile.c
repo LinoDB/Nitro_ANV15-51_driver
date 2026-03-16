@@ -92,6 +92,7 @@ ssize_t nitro_profile_read(
     size_t count,
     loff_t* ppos
 ) {
+    // thanks to 0x7375646F for the power profile method usage: https://github.com/0x7375646F/Linuwu-Sense/blob/73a25ec243a44ba2b1703e8d0a76fa2735062506/src/linuwu_sense.c
     if(*ppos > 0) return 0;
     u64 profile;
     union acpi_object* obj = run_wmi_command(nitro_profile_char_dev.wdev, &read_power_profile, sizeof(struct profile_get_out), "Read current power profile");
@@ -145,6 +146,7 @@ ssize_t nitro_profile_write(
     size_t count,
     loff_t* ppos
 ) {
+    // thanks to 0x7375646F for the power profile method usage: https://github.com/0x7375646F/Linuwu-Sense/blob/73a25ec243a44ba2b1703e8d0a76fa2735062506/src/linuwu_sense.c
     char profile[11];
     if(copy_from_user(profile, buf, 11)) {
         return -EFAULT;
