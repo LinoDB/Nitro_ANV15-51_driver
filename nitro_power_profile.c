@@ -23,7 +23,7 @@ struct profile_get_in check_profile_in = {
 const struct wmi_method_input read_power_profile = {
     .in = { sizeof(struct profile_get_in), &check_profile_in },
     .instance = 0,
-    .method_id = 23
+    .method_id = POWER_PROFILE_GET_MISCELLANEOUS_SETTING_METHOD_ID
 };
 
 
@@ -177,7 +177,7 @@ ssize_t nitro_profile_write(
     struct wmi_method_input set_platform_profile = {
         .in = { sizeof(struct profile_write_in), &write_in },
         .instance = 0,
-        .method_id = 22
+        .method_id = POWER_PROFILE_SET_MISCELLANEOUS_SETTING_METHOD_ID
     };
     if(down_interruptible(&nitro_profile_lock)) return -ERESTARTSYS;
     union acpi_object* obj = run_wmi_command(nitro_profile_char_dev.wdev, &set_platform_profile, sizeof(struct profile_write_out), "Set gaming profile");

@@ -25,7 +25,7 @@ struct battery_get_charge_limit_in check_charge_limit_in = {
 const struct wmi_method_input read_battery_charge_limited = {
     .in = { sizeof(struct battery_get_charge_limit_in), &check_charge_limit_in },
     .instance = 0,
-    .method_id = 20
+    .method_id = BATTERY_GET_HEALTH_CONTROL_METHOD_ID
 };
 
 
@@ -160,7 +160,7 @@ ssize_t nitro_battery_write(
     struct wmi_method_input write_battery_charge_limited = {
         .in = { sizeof(struct battery_set_charge_limit_in), &set_charge_limit_in },
         .instance = 0,
-        .method_id = 21
+        .method_id = BATTERY_SET_HEALTH_CONTROL_METHOD_ID
     };
     if(down_interruptible(&nitro_battery_lock)) return -ERESTARTSYS;
     union acpi_object* obj = run_wmi_command(nitro_battery_char_dev.wdev, &write_battery_charge_limited, sizeof(struct battery_set_charge_limit_out), "Set battery charge limit");
