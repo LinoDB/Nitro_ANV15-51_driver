@@ -139,14 +139,14 @@ Set power profile:
 
 ```bash
 # set power profile to "quiet"
-echo "quiet" > /dev/nitro_battery_charge_limit
+echo quiet > /dev/nitro_power_profile
 
 # set power profile to "balanced"
-echo "balanced" > /dev/nitro_battery_charge_limit
+echo balanced > /dev/nitro_power_profile
 
 # set power profile to "performance"
-echo "performance" > /dev/nitro_battery_charge_limit
+echo performance > /dev/nitro_power_profile
 
 # set power profile to "eco"
-echo "eco" > /dev/nitro_battery_charge_limit
+echo eco > /dev/nitro_power_profile
 ```

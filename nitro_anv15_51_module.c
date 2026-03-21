@@ -1,7 +1,6 @@
 #include "misc.h"
 #include "nitro_anv15_51_module.h"
 
-#include <linux/cdev.h>
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/init.h>

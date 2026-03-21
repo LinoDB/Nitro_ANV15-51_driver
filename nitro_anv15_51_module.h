@@ -1,6 +1,8 @@
 #ifndef NITRO_ANV15_51_H
 #define NITRO_ANV15_51_H
 
+#include <linux/cdev.h>
+
 
 /************************************
 ****** Major device structure *******
