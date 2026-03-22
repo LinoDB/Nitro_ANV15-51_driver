@@ -17,24 +17,13 @@ DEFINE_SEMAPHORE(nitro_fan_lock, 1);
 ************************************/
 
 struct get_fan_behaviour_in check_fan_behaviour_in = {
-    .gmInput = 0
+    .gmInput = 9
 };
 
 const struct wmi_method_input read_fan_behaviour = {
     .in = { sizeof(struct get_fan_behaviour_in), &check_fan_behaviour_in },
     .instance = 0,
     .method_id = FAN_GET_BEHAVIOUR_METHOD_ID
-};
-
-
-struct get_fan_speed_in check_fan_speed_in = {
-    .gmInput = 0
-};
-
-const struct wmi_method_input read_fan_speed = {
-    .in = { sizeof(struct get_fan_speed_in), &check_fan_speed_in },
-    .instance = 0,
-    .method_id = FAN_GET_SPEED_METHOD_ID
 };
 
 
@@ -105,47 +94,45 @@ ssize_t nitro_fan_read(
 ) {
     if(*ppos > 0) return 0;
     u64 behaviour;
-    union acpi_object* obj = run_wmi_command(nitro_fan_char_dev.wdev, &read_fan_behaviour, sizeof(struct get_fan_behaviour_out), "Read fan behaviour");
-    if(obj) {
-        behaviour = ((struct get_fan_behaviour_out*)obj->buffer.pointer)->gmOutput;
-        kfree(obj);
+    union acpi_object* b_obj = run_wmi_command(nitro_fan_char_dev.wdev, &read_fan_behaviour, sizeof(struct get_fan_behaviour_out), "Read fan behaviour");
+    if(b_obj) {
+        behaviour = ((struct get_fan_behaviour_out*)b_obj->buffer.pointer)->gmOutput >> 8;
+        kfree(b_obj);
     }
     else {
+        printk(KERN_INFO "Failed to read Nitro fan mode");
         return -EFAULT;
     }
-    printk(KERN_INFO "Nitro fan behaviour: 0x%llx", behaviour);
 
-    u64 speed;
-    union acpi_object* obj2 = run_wmi_command(nitro_fan_char_dev.wdev, &read_fan_speed, sizeof(struct get_fan_speed_out), "Read fan speed");
-    if(obj2) {
-        speed = ((struct get_fan_speed_out*)obj2->buffer.pointer)->gmOutput;
-        kfree(obj2);
-    }
-    else {
-        return -EFAULT;
-    }
-    printk(KERN_INFO "Nitro fan speed: 0x%llx", speed);
-    printk(KERN_INFO "FLUSH");
+    struct get_fan_speed_in check_fan_speed_in = {
+        .gmInput = CPU_FAN_SPEED_READ_VALUE
+    };
+    const struct wmi_method_input read_fan_speed = {
+        .in = { sizeof(struct get_fan_speed_in), &check_fan_speed_in },
+        .instance = 0,
+        .method_id = FAN_GET_SPEED_METHOD_ID
+    };
 
-    char* ret = "OK\n";
-    size_t actual_count = 3;
-    // char* ret;
-    // size_t actual_count = 0;
-    // switch(enabled) {
-    //     case 1:
-    //         ret = "80%\n";
-    //         actual_count = 4 * sizeof(char);
-    //         break;
-    //     case 0:
-    //         ret = "100%\n";
-    //         actual_count = 5 * sizeof(char);
-    //         break;
-    //     default:
-    //         printk(KERN_ERR "Found unknown nitro battery charge limit number '%u'", enabled);
-    //         ret = "unknown\n";
-    //         actual_count = 8 * sizeof(char);
-    // }
-    if(copy_to_user(buf, ret, actual_count)) {
+    u64 speed[2];
+    for(int i = 0; i < 2; i++) {
+        union acpi_object* s_obj = run_wmi_command(nitro_fan_char_dev.wdev, &read_fan_speed, sizeof(struct get_fan_speed_out), "Read fan speed");
+        if(s_obj) {
+            speed[i] = ((struct get_fan_speed_out*)s_obj->buffer.pointer)->gmOutput >> 8;
+            kfree(s_obj);
+        }
+        else {
+            printk(KERN_INFO "Failed to read Nitro fan speed");
+            return -EFAULT;
+        }
+        check_fan_speed_in.gmInput = GPU_FAN_SPEED_READ_VALUE;
+    }
+
+    char* cpu_auto = behaviour & 0x02 ? "manual" : "auto";
+    char* gpu_auto = behaviour & 0x90 ? "manual" : "auto";
+
+    char tmp_buf[45]; // max 44
+    size_t actual_count = sprintf(tmp_buf, "CPU: %s, %llu RPM\nGPU: %s, %llu RPM\n", cpu_auto, speed[0], gpu_auto, speed[1]);
+    if(copy_to_user(buf, tmp_buf, actual_count)) {
         return -EFAULT;
     }
     *ppos += actual_count;
