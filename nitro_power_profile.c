@@ -59,7 +59,7 @@ struct nitro_char_dev nitro_profile_char_dev = {
     .fops = &prof_fops,
     .driver = &prof_driver,
     .name = "Power Profile Controller",
-    .file_name = "nitro_power_profile",
+    .file_name = "nitro_anv15_51!power_profile",
     .initialized = false,
 };
 

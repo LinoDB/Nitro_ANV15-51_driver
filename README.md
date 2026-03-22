@@ -111,7 +111,7 @@ make uninstall
 Check current charge limit:
 
 ```bash
-cat /dev/nitro_battery_charge_limit
+cat /dev/nitro_anv15_51!battery_charge_limit
 # either "80%" or "100%"
 ```
 
@@ -119,10 +119,10 @@ Set charge limit:
 
 ```bash
 # set charge limit to 80%
-echo 1 > /dev/nitro_battery_charge_limit
+echo 1 > /dev/nitro_anv15_51!battery_charge_limit
 
 # set charge limit to 100%
-echo 0 > /dev/nitro_battery_charge_limit
+echo 0 > /dev/nitro_anv15_51!battery_charge_limit
 ```
 
 
@@ -131,7 +131,7 @@ echo 0 > /dev/nitro_battery_charge_limit
 Check current power profile:
 
 ```bash
-cat /dev/nitro_power_profile
+cat /dev/nitro_anv15_51!power_profile
 # either "quiet", "balanced", "performance", or "eco"
 ```
 
@@ -139,14 +139,14 @@ Set power profile:
 
 ```bash
 # set power profile to "quiet"
-echo quiet > /dev/nitro_power_profile
+echo quiet > /dev/nitro_anv15_51!power_profile
 
 # set power profile to "balanced"
-echo balanced > /dev/nitro_power_profile
+echo balanced > /dev/nitro_anv15_51!power_profile
 
 # set power profile to "performance"
-echo performance > /dev/nitro_power_profile
+echo performance > /dev/nitro_anv15_51!power_profile
 
 # set power profile to "eco"
-echo eco > /dev/nitro_power_profile
+echo eco > /dev/nitro_anv15_51!power_profile
 ```

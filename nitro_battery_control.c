@@ -61,7 +61,7 @@ struct nitro_char_dev nitro_battery_char_dev = {
     .fops = &batt_fops,
     .driver = &batt_driver,
     .name = "Battery Controller",
-    .file_name = "nitro_battery_charge_limit",
+    .file_name = "nitro_anv15_51!battery_charge_limit",
     .initialized = false,
 };
 

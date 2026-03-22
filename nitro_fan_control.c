@@ -59,7 +59,7 @@ struct nitro_char_dev nitro_fan_char_dev = {
     .fops = &fan_fops,
     .driver = &fan_driver,
     .name = "Fan Controller",
-    .file_name = "nitro_fan_control",
+    .file_name = "nitro_anv15_51!fan_control",
     .initialized = false,
 };
 
