@@ -5,7 +5,6 @@
 *.o
 Module*
 module*
-todo.md
 src/
 pkg/
 *pkg.tar*
