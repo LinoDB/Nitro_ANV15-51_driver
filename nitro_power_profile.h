@@ -10,7 +10,6 @@
 #include <linux/wmi.h>
 
 
-#define POWER_PROFILE_GUID "7A4DDFE7-5B5D-40B4-8595-4408E0CC7F56"
 #define POWER_PROFILE_GET_MISCELLANEOUS_SETTING_METHOD_ID 23
 #define POWER_PROFILE_SET_MISCELLANEOUS_SETTING_METHOD_ID 22
 
@@ -32,15 +31,6 @@ ssize_t nitro_profile_write(
     size_t count,
     loff_t* ppos
 );
-
-
-/************************************
-*** Device and utility structures ***
-************************************/
-
-int prof_probe(struct wmi_device *wdev, const void *context);
-
-void prof_remove(struct wmi_device *wdev);
 
 
 /************************************

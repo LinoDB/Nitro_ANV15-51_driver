@@ -10,7 +10,6 @@
 #include <linux/wmi.h>
 
 
-#define BATTERY_CONTROL_GUID "79772EC5-04B1-4bfd-843C-61E7F77B6CC9"
 #define BATTERY_GET_HEALTH_CONTROL_METHOD_ID 20
 #define BATTERY_SET_HEALTH_CONTROL_METHOD_ID 21
 
@@ -32,15 +31,6 @@ ssize_t nitro_battery_write(
     size_t count,
     loff_t* ppos
 );
-
-
-/************************************
-*** Device and utility structures ***
-************************************/
-
-int batt_probe(struct wmi_device *wdev, const void *context);
-
-void batt_remove(struct wmi_device *wdev);
 
 
 /************************************

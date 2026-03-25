@@ -7,6 +7,44 @@
 
 
 /************************************
+************ WMI drivers ************
+************************************/
+
+const struct wmi_device_id battery_dev_id = {
+    .guid_string = BATTERY_WMI_DEVICE_GUID
+};
+
+struct wmi_driver battery_driver = {
+    .driver = {
+        .name = "Battery WMI driver",
+        .owner = THIS_MODULE,        
+        .probe_type = PROBE_PREFER_ASYNCHRONOUS
+    },
+    .id_table = &battery_dev_id,
+    .probe = &battery_wmi_device_probe,
+    .remove = &battery_wmi_device_remove,     // needed?
+    // .shutdown = &battery_wmi_device_remove    // not yet in LTS Kernel - needed?
+};
+
+
+const struct wmi_device_id gaming_dev_id = {
+    .guid_string = GAMING_WMI_DEVICE_GUID
+};
+
+struct wmi_driver gaming_driver = {
+    .driver = {
+        .name = "Gaming WMI driver",
+        .owner = THIS_MODULE,        
+        .probe_type = PROBE_PREFER_ASYNCHRONOUS
+    },
+    .id_table = &gaming_dev_id,
+    .probe = &gaming_wmi_device_probe,
+    .remove = &gaming_wmi_device_remove,     // needed?
+    // .shutdown = &gaming_wmi_device_remove    // not yet in LTS Kernel - needed?
+};
+
+
+/************************************
 ********* Device management *********
 ************************************/
 

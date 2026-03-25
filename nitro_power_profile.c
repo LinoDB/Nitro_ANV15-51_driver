@@ -39,47 +39,15 @@ struct file_operations prof_fops = {
     .release = nitro_release
 };
 
-const struct wmi_device_id prof_dev_id = {
-    .guid_string = POWER_PROFILE_GUID
-};
-
-struct wmi_driver prof_driver = {
-    .driver = {
-        .name = "Power profile WMI driver",
-        .owner = THIS_MODULE,        
-        .probe_type = PROBE_PREFER_ASYNCHRONOUS
-    },
-    .id_table = &prof_dev_id,
-    .probe = &prof_probe,
-    .remove = &prof_remove,     // needed?
-    // .shutdown = &prof_remove    // not yet in LTS Kernel - needed?
-};
+extern struct wmi_driver gaming_driver;
 
 struct nitro_char_dev nitro_profile_char_dev = {
     .fops = &prof_fops,
-    .driver = &prof_driver,
+    .driver = &gaming_driver,
     .name = "Power Profile Controller",
     .file_name = "nitro_anv15_51!power_profile",
     .initialized = false,
 };
-
-
-/************************************
-********** Driver methods ***********
-************************************/
-
-int prof_probe(struct wmi_device *wdev, const void *context) {
-    if(!wmi_has_guid(POWER_PROFILE_GUID)) {
-        printk(KERN_ERR "Nitro Power Profile Control Driver init error: WMI device GUID couldn't be found");
-        return -ENODEV;
-    }
-    nitro_profile_char_dev.wdev = wdev;
-    return 0;
-}
-
-void prof_remove(struct wmi_device *wdev) {
-    if(nitro_profile_char_dev.wdev) nitro_profile_char_dev.wdev = NULL;
-}
 
 
 /************************************

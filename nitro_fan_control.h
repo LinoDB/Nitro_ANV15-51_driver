@@ -10,7 +10,6 @@
 #include <linux/wmi.h>
 
 
-#define FAN_CONTROL_GUID "7A4DDFE7-5B5D-40B4-8595-4408E0CC7F56"
 #define FAN_GET_BEHAVIOUR_METHOD_ID 15
 #define FAN_SET_BEHAVIOUR_METHOD_ID 14
 #define FAN_GET_SPEED_METHOD_ID 5
@@ -36,15 +35,6 @@ ssize_t nitro_fan_write(
     size_t count,
     loff_t* ppos
 );
-
-
-/************************************
-*** Device and utility structures ***
-************************************/
-
-int fan_probe(struct wmi_device *wdev, const void *context);
-
-void fan_remove(struct wmi_device *wdev);
 
 
 /************************************

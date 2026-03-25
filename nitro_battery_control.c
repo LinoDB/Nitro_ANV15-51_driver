@@ -41,47 +41,15 @@ struct file_operations batt_fops = {
     .release = nitro_release
 };
 
-const struct wmi_device_id batt_dev_id = {
-    .guid_string = BATTERY_CONTROL_GUID
-};
-
-struct wmi_driver batt_driver = {
-    .driver = {
-        .name = "Battery health WMI driver",
-        .owner = THIS_MODULE,        
-        .probe_type = PROBE_PREFER_ASYNCHRONOUS
-    },
-    .id_table = &batt_dev_id,
-    .probe = &batt_probe,
-    .remove = &batt_remove,     // needed?
-    // .shutdown = &batt_remove    // not yet in LTS Kernel - needed?
-};
+extern struct wmi_driver battery_driver;
 
 struct nitro_char_dev nitro_battery_char_dev = {
     .fops = &batt_fops,
-    .driver = &batt_driver,
+    .driver = &battery_driver,
     .name = "Battery Controller",
     .file_name = "nitro_anv15_51!battery_charge_limit",
     .initialized = false,
 };
-
-
-/************************************
-********** Driver methods ***********
-************************************/
-
-int batt_probe(struct wmi_device *wdev, const void *context) {
-    if(!wmi_has_guid(BATTERY_CONTROL_GUID)) {
-        printk(KERN_ERR "Nitro Battery Control Driver init error: WMI device GUID couldn't be found");
-        return -ENODEV;
-    }
-    nitro_battery_char_dev.wdev = wdev;
-    return 0;
-}
-
-void batt_remove(struct wmi_device *wdev) {
-    if(nitro_battery_char_dev.wdev) nitro_battery_char_dev.wdev = NULL;
-}
 
 
 /************************************

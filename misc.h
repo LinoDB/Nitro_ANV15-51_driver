@@ -8,6 +8,10 @@
 #include <linux/wmi.h>
 
 
+#define BATTERY_WMI_DEVICE_GUID "79772EC5-04B1-4bfd-843C-61E7F77B6CC9"
+#define GAMING_WMI_DEVICE_GUID "7A4DDFE7-5B5D-40B4-8595-4408E0CC7F56"
+
+
 /************************************
 ********** WMI structures ***********
 ************************************/
@@ -52,6 +56,14 @@ int all_dev_uevent(const struct device *dev, struct kobj_uevent_env *env);
 ************************************/
 
 union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct wmi_method_input* input, size_t length, const char* call_name);
+
+int battery_wmi_device_probe(struct wmi_device *wdev, const void *context);
+
+void battery_wmi_device_remove(struct wmi_device *wdev);
+
+int gaming_wmi_device_probe(struct wmi_device *wdev, const void *context);
+
+void gaming_wmi_device_remove(struct wmi_device *wdev);
 
 
 /************************************

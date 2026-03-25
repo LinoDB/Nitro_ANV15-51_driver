@@ -46,14 +46,20 @@ static int __init nitro__av15_51_init(void) {
     for(int i = 0; i < _device.char_device_count; i++) {
         struct nitro_char_dev* char_dev = _device.char_devs[i];
         char_dev->minor = i;
+        bool wmi_device_already_registered = false;
 
-        if(!wmi_has_guid(char_dev->driver->id_table->guid_string)) {
-            printk(KERN_ERR "Nitro ANV15-51 driver %s init error: WMI device GUID '%s' doesn't exist", char_dev->name, char_dev->driver->id_table->guid_string);
-            continue;
+        if(char_dev->wdev && wmidev_instance_count(char_dev->wdev)) {
+            wmi_device_already_registered = true;
         }
-        if(wmi_driver_register(char_dev->driver)) {
-            printk(KERN_ERR "Nitro ANV15-51 driver %s init error: Couldn't register WMI driver", char_dev->name);
-            continue;
+        else {
+            if(!wmi_has_guid(char_dev->driver->id_table->guid_string)) {
+                printk(KERN_ERR "Nitro ANV15-51 driver %s init error: WMI device GUID '%s' doesn't exist", char_dev->name, char_dev->driver->id_table->guid_string);
+                continue;
+            }
+            if(wmi_driver_register(char_dev->driver)) {
+                printk(KERN_ERR "Nitro ANV15-51 driver %s init error: Couldn't register WMI driver", char_dev->name);
+                continue;
+            }
         }
 
         char_dev->dev_cl = class_create(char_dev->file_name);
@@ -84,7 +90,9 @@ static int __init nitro__av15_51_init(void) {
         continue;
         destroy_dev: device_destroy(char_dev->dev_cl, MKDEV(_device.major, char_dev->minor));
         destroy_class: class_destroy(char_dev->dev_cl);
-        wmi_unreg: wmi_driver_unregister(char_dev->driver);
+        wmi_unreg: if(!wmi_device_already_registered) {
+            wmi_driver_unregister(char_dev->driver);
+        }
     }
 
     if(_device.initialized) {
@@ -106,7 +114,9 @@ static void __exit nitro__av15_51_exit(void) {
             cdev_del(&char_dev->cdev);
             device_destroy(char_dev->dev_cl, MKDEV(_device.major, char_dev->minor));
             class_destroy(char_dev->dev_cl);
-            wmi_driver_unregister(char_dev->driver);
+            if(char_dev->wdev && wmidev_instance_count(char_dev->wdev)) {
+                wmi_driver_unregister(char_dev->driver);
+            }
             char_dev->initialized = false;
         }
         unregister_chrdev_region(_device.devno, _device.char_device_count);

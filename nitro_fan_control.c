@@ -39,47 +39,15 @@ struct file_operations fan_fops = {
     .release = nitro_release
 };
 
-const struct wmi_device_id fan_dev_id = {
-    .guid_string = FAN_CONTROL_GUID
-};
-
-struct wmi_driver fan_driver = {
-    .driver = {
-        .name = "Fan speed WMI driver",
-        .owner = THIS_MODULE,        
-        .probe_type = PROBE_PREFER_ASYNCHRONOUS
-    },
-    .id_table = &fan_dev_id,
-    .probe = &fan_probe,
-    .remove = &fan_remove,     // needed?
-    // .shutdown = &fan_remove    // not yet in LTS Kernel - needed?
-};
+extern struct wmi_driver gaming_driver;
 
 struct nitro_char_dev nitro_fan_char_dev = {
     .fops = &fan_fops,
-    .driver = &fan_driver,
+    .driver = &gaming_driver,
     .name = "Fan Controller",
     .file_name = "nitro_anv15_51!fan_control",
     .initialized = false,
 };
-
-
-/************************************
-********** Driver methods ***********
-************************************/
-
-int fan_probe(struct wmi_device *wdev, const void *context) {
-    if(!wmi_has_guid(FAN_CONTROL_GUID)) {
-        printk(KERN_ERR "Nitro Fan Control Driver init error: WMI device GUID couldn't be found");
-        return -ENODEV;
-    }
-    nitro_fan_char_dev.wdev = wdev;
-    return 0;
-}
-
-void fan_remove(struct wmi_device *wdev) {
-    if(nitro_fan_char_dev.wdev) nitro_fan_char_dev.wdev = NULL;
-}
 
 
 /************************************
