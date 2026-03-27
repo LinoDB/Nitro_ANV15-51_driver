@@ -28,7 +28,7 @@ const struct wmi_method_input read_fan_behaviour = {
 ********* Device management *********
 ************************************/
 
-struct file_operations fan_fops = {
+struct file_operations cpu_fan_fops = {
     .owner = THIS_MODULE,
     .read = nitro_fan_read,
     // .write = nitro_fan_write,
@@ -36,14 +36,33 @@ struct file_operations fan_fops = {
     .release = nitro_release
 };
 
+struct file_operations gpu_fan_fops = {
+    .owner = THIS_MODULE,
+    .read = nitro_fan_read,
+    // .write = nitro_fan_write,
+    .open = nitro_open,
+    .release = nitro_release
+};
+
+
 extern struct wmi_driver gaming_driver;
 extern struct semaphore gaming_semaphore;
 
-struct nitro_char_dev nitro_fan_char_dev = {
-    .fops = &fan_fops,
+
+struct nitro_char_dev nitro_cpu_fan_char_dev = {
+    .fops = &cpu_fan_fops,
     .driver = &gaming_driver,
-    .name = "Fan Controller",
-    .file_name = "nitro_anv15_51!fan_control",
+    .name = "CPU Fan Controller",
+    .file_name = "nitro_anv15_51!fan_control_cpu",
+    .initialized = false,
+    .semaphore = &gaming_semaphore,
+};
+
+struct nitro_char_dev nitro_gpu_fan_char_dev = {
+    .fops = &gpu_fan_fops,
+    .driver = &gaming_driver,
+    .name = "GPU Fan Controller",
+    .file_name = "nitro_anv15_51!fan_control_gpu",
     .initialized = false,
     .semaphore = &gaming_semaphore,
 };
@@ -59,9 +78,12 @@ ssize_t nitro_fan_read(
     size_t count,
     loff_t* ppos
 ) {
+    // thanks to 0x7375646F for the fan method usage: https://github.com/0x7375646F/Linuwu-Sense/blob/73a25ec243a44ba2b1703e8d0a76fa2735062506/src/linuwu_sense.c
     if(*ppos > 0) return 0;
+    struct nitro_char_dev char_dev = *((struct nitro_char_dev*) (file->private_data));
+
     u64 behaviour;
-    union acpi_object* b_obj = run_wmi_command(nitro_fan_char_dev.wdev, &read_fan_behaviour, sizeof(struct get_fan_behaviour_out), "Read fan behaviour");
+    union acpi_object* b_obj = run_wmi_command(char_dev.wdev, &read_fan_behaviour, sizeof(struct get_fan_behaviour_out), "Read fan behaviour");
     if(b_obj) {
         behaviour = ((struct get_fan_behaviour_out*)b_obj->buffer.pointer)->gmOutput >> 8;
         kfree(b_obj);
@@ -71,8 +93,10 @@ ssize_t nitro_fan_read(
         return -EFAULT;
     }
 
+    bool cpu = char_dev.name[0] == 'C';
+
     struct get_fan_speed_in check_fan_speed_in = {
-        .gmInput = CPU_FAN_SPEED_READ_VALUE
+        .gmInput = cpu ? CPU_FAN_SPEED_READ_VALUE : GPU_FAN_SPEED_READ_VALUE
     };
     const struct wmi_method_input read_fan_speed = {
         .in = { sizeof(struct get_fan_speed_in), &check_fan_speed_in },
@@ -80,25 +104,23 @@ ssize_t nitro_fan_read(
         .method_id = FAN_GET_SPEED_METHOD_ID
     };
 
-    u64 speed[2];
+    u64 speed;
     for(int i = 0; i < 2; i++) {
-        union acpi_object* s_obj = run_wmi_command(nitro_fan_char_dev.wdev, &read_fan_speed, sizeof(struct get_fan_speed_out), "Read fan speed");
+        union acpi_object* s_obj = run_wmi_command(char_dev.wdev, &read_fan_speed, sizeof(struct get_fan_speed_out), "Read fan speed");
         if(s_obj) {
-            speed[i] = ((struct get_fan_speed_out*)s_obj->buffer.pointer)->gmOutput >> 8;
+            speed = ((struct get_fan_speed_out*)s_obj->buffer.pointer)->gmOutput >> 8;
             kfree(s_obj);
         }
         else {
             printk(KERN_INFO "Failed to read Nitro fan speed");
             return -EFAULT;
         }
-        check_fan_speed_in.gmInput = GPU_FAN_SPEED_READ_VALUE;
     }
 
-    char* cpu_auto = behaviour & 0x02 ? "manual" : "auto";
-    char* gpu_auto = behaviour & 0x90 ? "manual" : "auto";
+    char* mode = behaviour & (cpu ? CPU_FAN_BEHAVIOUR_MASK : GPU_FAN_BEHAVIOUR_MASK) ? "manual" : "auto";
 
-    char tmp_buf[45]; // max 44
-    size_t actual_count = sprintf(tmp_buf, "CPU: %s, %llu RPM\nGPU: %s, %llu RPM\n", cpu_auto, speed[0], gpu_auto, speed[1]);
+    char tmp_buf[30]; // max 29
+    size_t actual_count = sprintf(tmp_buf, "Mode: %s\nSpeed: %llu RPM\n", mode, speed);
     if(copy_to_user(buf, tmp_buf, actual_count)) {
         return -EFAULT;
     }

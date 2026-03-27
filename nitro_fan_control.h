@@ -15,7 +15,9 @@
 #define FAN_GET_SPEED_METHOD_ID 5
 #define FAN_SET_SPEED_METHOD_ID 16
 #define CPU_FAN_SPEED_READ_VALUE 0x0201
+#define CPU_FAN_BEHAVIOUR_MASK 0x02
 #define GPU_FAN_SPEED_READ_VALUE 0x0601
+#define GPU_FAN_BEHAVIOUR_MASK 0x90
 
 
 /************************************

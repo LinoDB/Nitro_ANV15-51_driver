@@ -5,7 +5,8 @@
 
 extern struct nitro_char_dev nitro_battery_char_dev;
 extern struct nitro_char_dev nitro_profile_char_dev;
-extern struct nitro_char_dev nitro_fan_char_dev;
+extern struct nitro_char_dev nitro_cpu_fan_char_dev;
+extern struct nitro_char_dev nitro_gpu_fan_char_dev;
 
 
 /************************************
@@ -32,11 +33,13 @@ int gaming_wmi_device_probe(struct wmi_device *wdev, const void *context) {
         return -ENODEV;
     }
     nitro_profile_char_dev.wdev = wdev;
-    nitro_fan_char_dev.wdev = wdev;
+    nitro_cpu_fan_char_dev.wdev = wdev;
+    nitro_gpu_fan_char_dev.wdev = wdev;
     return 0;
 }
 
 void gaming_wmi_device_remove(struct wmi_device *wdev) {
     if(nitro_profile_char_dev.wdev) nitro_profile_char_dev.wdev = NULL;
-    if(nitro_fan_char_dev.wdev) nitro_fan_char_dev.wdev = NULL;
+    if(nitro_cpu_fan_char_dev.wdev) nitro_cpu_fan_char_dev.wdev = NULL;
+    if(nitro_gpu_fan_char_dev.wdev) nitro_gpu_fan_char_dev.wdev = NULL;
 }
