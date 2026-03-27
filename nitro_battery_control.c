@@ -9,9 +9,6 @@
 #include <linux/wmi.h>
 
 
-DEFINE_SEMAPHORE(nitro_battery_lock, 1);
-
-
 /************************************
 ******* WMI evaluation in/out *******
 ************************************/
@@ -42,6 +39,7 @@ struct file_operations batt_fops = {
 };
 
 extern struct wmi_driver battery_driver;
+extern struct semaphore battery_semaphore;
 
 struct nitro_char_dev nitro_battery_char_dev = {
     .fops = &batt_fops,
@@ -49,6 +47,7 @@ struct nitro_char_dev nitro_battery_char_dev = {
     .name = "Battery Controller",
     .file_name = "nitro_anv15_51!battery_charge_limit",
     .initialized = false,
+    .semaphore = &battery_semaphore,
 };
 
 
@@ -130,9 +129,9 @@ ssize_t nitro_battery_write(
         .instance = 0,
         .method_id = BATTERY_SET_HEALTH_CONTROL_METHOD_ID
     };
-    if(down_interruptible(&nitro_battery_lock)) return -ERESTARTSYS;
+    if(down_interruptible(nitro_battery_char_dev.semaphore)) return -ERESTARTSYS;
     union acpi_object* obj = run_wmi_command(nitro_battery_char_dev.wdev, &write_battery_charge_limited, sizeof(struct battery_set_charge_limit_out), "Set battery charge limit");
-    up(&nitro_battery_lock);
+    up(nitro_battery_char_dev.semaphore);
     // ignore output
     if(obj) {
         kfree(obj);

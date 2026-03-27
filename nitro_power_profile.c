@@ -9,9 +9,6 @@
 #include <linux/wmi.h>
 
 
-DEFINE_SEMAPHORE(nitro_profile_lock, 1);
-
-
 /************************************
 ******* WMI evaluation in/out *******
 ************************************/
@@ -40,6 +37,7 @@ struct file_operations prof_fops = {
 };
 
 extern struct wmi_driver gaming_driver;
+extern struct semaphore gaming_semaphore;
 
 struct nitro_char_dev nitro_profile_char_dev = {
     .fops = &prof_fops,
@@ -47,6 +45,7 @@ struct nitro_char_dev nitro_profile_char_dev = {
     .name = "Power Profile Controller",
     .file_name = "nitro_anv15_51!power_profile",
     .initialized = false,
+    .semaphore = &gaming_semaphore,
 };
 
 
@@ -147,9 +146,9 @@ ssize_t nitro_profile_write(
         .instance = 0,
         .method_id = POWER_PROFILE_SET_MISCELLANEOUS_SETTING_METHOD_ID
     };
-    if(down_interruptible(&nitro_profile_lock)) return -ERESTARTSYS;
+    if(down_interruptible(nitro_profile_char_dev.semaphore)) return -ERESTARTSYS;
     union acpi_object* obj = run_wmi_command(nitro_profile_char_dev.wdev, &set_platform_profile, sizeof(struct profile_write_out), "Set gaming profile");
-    up(&nitro_profile_lock);
+    up(nitro_profile_char_dev.semaphore);
     // ignore output
     if(obj) {
         kfree(obj);

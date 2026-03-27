@@ -2,8 +2,17 @@
 
 #include <linux/acpi.h>
 #include <linux/fs.h>
+#include <linux/semaphore.h>
 #include <linux/slab.h>
 #include <linux/wmi.h>
+
+
+/************************************
+************ Shared locks ***********
+************************************/
+
+DEFINE_SEMAPHORE(battery_semaphore, 1);
+DEFINE_SEMAPHORE(gaming_semaphore, 1);
 
 
 /************************************

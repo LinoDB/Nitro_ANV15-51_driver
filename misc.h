@@ -5,6 +5,7 @@
 #include <linux/cdev.h>
 #include <linux/device.h>
 #include <linux/fs.h>
+#include <linux/semaphore.h>
 #include <linux/wmi.h>
 
 
@@ -28,6 +29,7 @@ struct nitro_char_dev {
     struct wmi_device* wdev;
     struct file_operations* fops;
     struct wmi_driver* driver;
+    struct semaphore* semaphore;
     int minor;
     const char* name;
     const char* file_name;
