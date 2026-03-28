@@ -61,8 +61,9 @@ ssize_t nitro_profile_read(
 ) {
     // thanks to 0x7375646F for the power profile method usage: https://github.com/0x7375646F/Linuwu-Sense/blob/73a25ec243a44ba2b1703e8d0a76fa2735062506/src/linuwu_sense.c
     if(*ppos > 0) return 0;
+    struct nitro_char_dev* char_dev = file->private_data;
     u64 profile;
-    union acpi_object* obj = run_wmi_command(nitro_profile_char_dev.wdev, &read_power_profile, sizeof(struct profile_get_out), "Read current power profile");
+    union acpi_object* obj = run_wmi_command(char_dev->wdev, &read_power_profile, sizeof(struct profile_get_out), "Read current power profile");
     if(obj) {
         profile = ((struct profile_get_out*)obj->buffer.pointer)->gmOutput;
         kfree(obj);
@@ -114,6 +115,7 @@ ssize_t nitro_profile_write(
     loff_t* ppos
 ) {
     // thanks to 0x7375646F for the power profile method usage: https://github.com/0x7375646F/Linuwu-Sense/blob/73a25ec243a44ba2b1703e8d0a76fa2735062506/src/linuwu_sense.c
+    struct nitro_char_dev* char_dev = file->private_data;
     char profile[11];
     if(copy_from_user(profile, buf, 11)) {
         return -EFAULT;
@@ -146,9 +148,9 @@ ssize_t nitro_profile_write(
         .instance = 0,
         .method_id = POWER_PROFILE_SET_MISCELLANEOUS_SETTING_METHOD_ID
     };
-    if(down_interruptible(nitro_profile_char_dev.semaphore)) return -ERESTARTSYS;
-    union acpi_object* obj = run_wmi_command(nitro_profile_char_dev.wdev, &set_platform_profile, sizeof(struct profile_write_out), "Set gaming profile");
-    up(nitro_profile_char_dev.semaphore);
+    if(down_interruptible(char_dev->semaphore)) return -ERESTARTSYS;
+    union acpi_object* obj = run_wmi_command(char_dev->wdev, &set_platform_profile, sizeof(struct profile_write_out), "Set gaming profile");
+    up(char_dev->semaphore);
     // ignore output
     if(obj) {
         kfree(obj);

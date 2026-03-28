@@ -62,8 +62,9 @@ ssize_t nitro_battery_read(
     loff_t* ppos
 ) {
     if(*ppos > 0) return 0;
+    struct nitro_char_dev* char_dev = file->private_data;
     u8 enabled = 2;
-    union acpi_object* obj = run_wmi_command(nitro_battery_char_dev.wdev, &read_battery_charge_limited, sizeof(struct battery_get_charge_limit_out), "Read battery charge limit");
+    union acpi_object* obj = run_wmi_command(char_dev->wdev, &read_battery_charge_limited, sizeof(struct battery_get_charge_limit_out), "Read battery charge limit");
     if(obj) {
         enabled = ((struct battery_get_charge_limit_out*)obj->buffer.pointer)->uFunctionStatus[0];
         kfree(obj);
@@ -101,7 +102,7 @@ ssize_t nitro_battery_write(
     size_t count,
     loff_t* ppos
 ) {
-    // struct nitro_char_dev* dev = file->private_data;
+    struct nitro_char_dev* char_dev = file->private_data;
     char activate[1];
     if(copy_from_user(activate, buf, 1)) {
         return -EFAULT;
@@ -129,9 +130,9 @@ ssize_t nitro_battery_write(
         .instance = 0,
         .method_id = BATTERY_SET_HEALTH_CONTROL_METHOD_ID
     };
-    if(down_interruptible(nitro_battery_char_dev.semaphore)) return -ERESTARTSYS;
-    union acpi_object* obj = run_wmi_command(nitro_battery_char_dev.wdev, &write_battery_charge_limited, sizeof(struct battery_set_charge_limit_out), "Set battery charge limit");
-    up(nitro_battery_char_dev.semaphore);
+    if(down_interruptible(char_dev->semaphore)) return -ERESTARTSYS;
+    union acpi_object* obj = run_wmi_command(char_dev->wdev, &write_battery_charge_limited, sizeof(struct battery_set_charge_limit_out), "Set battery charge limit");
+    up(char_dev->semaphore);
     // ignore output
     if(obj) {
         kfree(obj);
