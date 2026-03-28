@@ -34,6 +34,7 @@ struct nitro_char_dev {
     const char* name;
     const char* file_name;
     bool initialized;
+    u8 additional_data;
 };
 
 

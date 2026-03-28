@@ -56,6 +56,7 @@ struct nitro_char_dev nitro_cpu_fan_char_dev = {
     .file_name = "nitro_anv15_51!fan_control_cpu",
     .initialized = false,
     .semaphore = &gaming_semaphore,
+    .additional_data = 2,
 };
 
 struct nitro_char_dev nitro_gpu_fan_char_dev = {
@@ -65,12 +66,25 @@ struct nitro_char_dev nitro_gpu_fan_char_dev = {
     .file_name = "nitro_anv15_51!fan_control_gpu",
     .initialized = false,
     .semaphore = &gaming_semaphore,
+    .additional_data = 2,
 };
 
 
 /************************************
 ****** File operation methods *******
 ************************************/
+
+int _nitro_behaviour_check(struct wmi_device* wdev, u64* behaviour) {
+    union acpi_object* obj = run_wmi_command(wdev, &read_fan_behaviour, sizeof(struct get_fan_behaviour_out), "Read fan behaviour");
+    if(obj) {
+        *behaviour = ((struct get_fan_behaviour_out*)obj->buffer.pointer)->gmOutput >> 8;
+        kfree(obj);
+    }
+    else {
+        return -EFAULT;
+    }
+    return 0;
+}
 
 ssize_t nitro_fan_read(
     struct file* file,
@@ -80,21 +94,15 @@ ssize_t nitro_fan_read(
 ) {
     // thanks to 0x7375646F for the fan method usage: https://github.com/0x7375646F/Linuwu-Sense/blob/73a25ec243a44ba2b1703e8d0a76fa2735062506/src/linuwu_sense.c
     if(*ppos > 0) return 0;
-    struct nitro_char_dev char_dev = *((struct nitro_char_dev*) (file->private_data));
-
+    struct nitro_char_dev* char_dev = file->private_data;
     u64 behaviour;
-    union acpi_object* b_obj = run_wmi_command(char_dev.wdev, &read_fan_behaviour, sizeof(struct get_fan_behaviour_out), "Read fan behaviour");
-    if(b_obj) {
-        behaviour = ((struct get_fan_behaviour_out*)b_obj->buffer.pointer)->gmOutput >> 8;
-        kfree(b_obj);
-    }
-    else {
-        printk(KERN_INFO "Failed to read Nitro fan mode");
-        return -EFAULT;
+    int err = _nitro_behaviour_check(char_dev->wdev, &behaviour);
+    if(err) {
+        printk(KERN_ERR "Failed to read Nitro fan mode");
+        return err;
     }
 
-    bool cpu = char_dev.name[0] == 'C';
-
+    bool cpu = char_dev->name[0] == 'C';
     struct get_fan_speed_in check_fan_speed_in = {
         .gmInput = cpu ? CPU_FAN_SPEED_READ_VALUE : GPU_FAN_SPEED_READ_VALUE
     };
@@ -105,20 +113,17 @@ ssize_t nitro_fan_read(
     };
 
     u64 speed;
-    for(int i = 0; i < 2; i++) {
-        union acpi_object* s_obj = run_wmi_command(char_dev.wdev, &read_fan_speed, sizeof(struct get_fan_speed_out), "Read fan speed");
-        if(s_obj) {
-            speed = ((struct get_fan_speed_out*)s_obj->buffer.pointer)->gmOutput >> 8;
-            kfree(s_obj);
-        }
-        else {
-            printk(KERN_INFO "Failed to read Nitro fan speed");
-            return -EFAULT;
-        }
+    union acpi_object* obj = run_wmi_command(char_dev->wdev, &read_fan_speed, sizeof(struct get_fan_speed_out), "Read fan speed");
+    if(obj) {
+        speed = ((struct get_fan_speed_out*)obj->buffer.pointer)->gmOutput >> 8;
+        kfree(obj);
+    }
+    else {
+        printk(KERN_ERR "Failed to read Nitro fan speed");
+        return -EFAULT;
     }
 
     char* mode = behaviour & (cpu ? CPU_FAN_BEHAVIOUR_MASK : GPU_FAN_BEHAVIOUR_MASK) ? "manual" : "auto";
-
     char tmp_buf[30]; // max 29
     size_t actual_count = sprintf(tmp_buf, "Mode: %s\nSpeed: %llu RPM\n", mode, speed);
     if(copy_to_user(buf, tmp_buf, actual_count)) {
@@ -134,17 +139,33 @@ ssize_t nitro_fan_read(
 //     size_t count,
 //     loff_t* ppos
 // ) {
-//     // struct nitro_char_dev* dev = file->private_data;
-//     char activate[1];
-//     if(copy_from_user(activate, buf, 1)) {
+//     // thanks to 0x7375646F for the fan method usage: https://github.com/0x7375646F/Linuwu-Sense/blob/73a25ec243a44ba2b1703e8d0a76fa2735062506/src/linuwu_sense.c
+//     struct nitro_char_dev* char_dev = file->private_data;
+//     char fan_input[5];
+//     if(copy_from_user(fan_input, buf, 5)) {
 //         return -EFAULT;
 //     }
-//     struct battery_set_charge_limit_in set_charge_limit_in = {
-//         .uBatteryNo = 1,
-//         .uFunctionMask = 1,
-//         .uFunctionStatus = 0,
-//         .uReservedIn = {0, 0, 0, 0, 0}
+//     bool cpu = char_dev->name[0] == 'C';
+
+//     struct set_fan_behaviour_in fan_behaviour_in = {
+//         .gmInput = 0
 //     };
+
+//     if(init_str_equal(fan_input, "reset", 5)) {
+//         fan_behaviour_in.gmInput = cpu ? CPU_FAN_AUTO_MODE : GPU_FAN_AUTO_MODE;
+//     }
+//     else if(init_str_equal(fan_input, "auto", 4)) {
+//         fan_behaviour_in.gmInput = 
+//         // set auto
+//     }
+    
+//     const struct wmi_method_input set_fan_mode = {
+//         .in = { sizeof(struct set_fan_behaviour_in), &fan_behaviour_in },
+//         .instance = 0,
+//         .method_id = FAN_SET_BEHAVIOUR_METHOD_ID
+//     };
+
+    
 
 //     switch(*activate) {
 //         case '0':
@@ -154,7 +175,7 @@ ssize_t nitro_fan_read(
 //             set_charge_limit_in.uFunctionStatus = 1;
 //             break;
 //         default:
-//             printk(KERN_WARNING "Undefined input for setting Nitro battery control mode: %s\n", activate);
+//             printk(KERN_WARNING "Undefined input for setting Nitro battery control mode: %s", activate);
 //             return -EINVAL;
 //     }
 //     struct wmi_method_input write_battery_charge_limited = {

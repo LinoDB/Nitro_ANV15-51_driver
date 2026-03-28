@@ -16,13 +16,22 @@
 #define FAN_SET_SPEED_METHOD_ID 16
 #define CPU_FAN_SPEED_READ_VALUE 0x0201
 #define CPU_FAN_BEHAVIOUR_MASK 0x02
+#define CPU_FAN_AUTO_MODE 0x010001
+#define CPU_FAN_MANUAL_MODE 0x030001
 #define GPU_FAN_SPEED_READ_VALUE 0x0601
 #define GPU_FAN_BEHAVIOUR_MASK 0x90
+#define GPU_FAN_AUTO_MODE 0x400008
+#define GPU_FAN_MANUAL_MODE 0xC00008
 
 
 /************************************
 * File operation method definitions *
 ************************************/
+
+int _nitro_behaviour_check(
+    struct wmi_device* wdev,
+    u64* behaviour
+);
 
 ssize_t nitro_fan_read(
     struct file* file,

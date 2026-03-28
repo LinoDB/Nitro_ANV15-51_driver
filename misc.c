@@ -27,7 +27,7 @@ struct wmi_driver battery_driver = {
     .driver = {
         .name = "Battery WMI driver",
         .owner = THIS_MODULE,        
-        .probe_type = PROBE_PREFER_ASYNCHRONOUS
+        .probe_type = PROBE_FORCE_SYNCHRONOUS
     },
     .id_table = &battery_dev_id,
     .probe = &battery_wmi_device_probe,
@@ -44,7 +44,7 @@ struct wmi_driver gaming_driver = {
     .driver = {
         .name = "Gaming WMI driver",
         .owner = THIS_MODULE,        
-        .probe_type = PROBE_PREFER_ASYNCHRONOUS
+        .probe_type = PROBE_FORCE_SYNCHRONOUS
     },
     .id_table = &gaming_dev_id,
     .probe = &gaming_wmi_device_probe,
@@ -94,14 +94,14 @@ union acpi_object* run_wmi_command(struct wmi_device* wdev, const struct wmi_met
         &out
     );
     if(ACPI_FAILURE(status)) {
-        printk(KERN_ERR "Nitro Control Driver: Couldn't evaluate wmidev method %d (%s)\n", input->method_id, call_name);
+        printk(KERN_ERR "Nitro Control Driver: Couldn't evaluate wmidev method %d (%s)", input->method_id, call_name);
         return NULL;
     }
     // thanks to 0x7375646F: https://github.com/0x7375646F/Linuwu-Sense/blob/df84ac7a020efebd4cd1097e73940d93eb959093/src/linuwu_sense.c#L3001
     union acpi_object* obj = out.pointer;
     if (!obj || obj->type != ACPI_TYPE_BUFFER || obj->buffer.length != length) {
         printk(
-            KERN_ERR "Nitro Control Driver: '%s' returned wrong buffer: type %d, length %d\n",
+            KERN_ERR "Nitro Control Driver: '%s' returned wrong buffer: type %d, length %d",
             call_name,
             obj->type,
             obj->buffer.length

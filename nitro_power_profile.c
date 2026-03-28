@@ -135,7 +135,7 @@ ssize_t nitro_profile_write(
         write_in.gmInput = 6;
     }
     else {
-        printk(KERN_WARNING "Undefined input for setting Nitro power profile: %s", profile);
+        printk(KERN_WARNING "Undefined input for setting Nitro power profile: %s\n", profile);
         return -EINVAL;
     }
     write_in.gmInput = write_in.gmInput << 8;
